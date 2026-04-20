@@ -590,6 +590,7 @@ export default {
 	border-radius: 20rpx;
 	padding: 24rpx;
 	box-shadow: 0 8rpx 24rpx rgba(28,74,39,0.08);
+	border: 1rpx solid #e7f0e7;
 }
 
 .post-header {
@@ -691,8 +692,8 @@ export default {
 	display: flex;
 	gap: 32rpx;
 	padding: 24rpx;
-	border-top: 1rpx solid #f5f5f5;
-	border-bottom: 1rpx solid #f5f5f5;
+	border-top: 1rpx solid #eaf2ea;
+	border-bottom: 1rpx solid #eaf2ea;
 }
 
 .action-btn {
@@ -742,7 +743,7 @@ export default {
 }
 
 .count-text.liked {
-	color: #ff4444;
+	color: #d64545;
 	font-weight: 500;
 }
 

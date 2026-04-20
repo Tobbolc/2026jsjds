@@ -463,6 +463,8 @@ import config from '@/config.js'
 	font-weight: bold;
 	color: #333;
 	margin-bottom: 30rpx;
+	padding-left: 16rpx;
+	border-left: 8rpx solid #2C8A43;
 }
 
 .upload-section {
@@ -582,7 +584,7 @@ import config from '@/config.js'
 
 .confidence {
 	font-size: 24rpx;
-	color: #2C8A43;
+	color: #1f7a34;
 	margin-bottom: 6rpx;
 	display: block;
 }
@@ -695,11 +697,11 @@ import config from '@/config.js'
 }
 
 .status-warning {
-	color: #FFA500 !important;
+	color: #d98307 !important;
 }
 
 .status-danger {
-	color: #FF4444 !important;
+	color: #d64545 !important;
 }
 
 .loading-more, .no-more {
