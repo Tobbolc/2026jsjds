@@ -1,0 +1,79 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationStyle": "default",
+				"navigationBarTitleText": "农作物病虫害识别",
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/about/about",
+			"style": {
+				"navigationStyle": "default",
+				"navigationBarTitleText": "关于我们"
+			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationStyle": "default",
+				"navigationBarTitleText": "登录/注册"
+			}
+		},
+		{
+			"path": "pages/discuss/discuss",
+			"style": {
+				"navigationStyle": "default",
+				"navigationBarTitleText": "讨论"
+			}
+		}
+	],
+	"tabBar": {
+		"color": "#999999",
+		"selectedColor": "#2C8A43",
+		"backgroundColor": "#ffffff",
+		"borderStyle": "black",
+		"list": [{
+			"pagePath": "pages/index/index",
+			"text": "识别",
+			"fontSizeRatio": 1.0,
+			"iconfont": {
+				"text": "\ue665",  // 使用内置图标的 unicode
+				"selectedText": "\ue665",
+				"fontSize": "22px",
+				"color": "#999999",
+				"selectedColor": "#2C8A43"
+			}
+		}, {
+			"pagePath": "pages/discuss/discuss",
+			"text": "讨论",
+			"fontSizeRatio": 1.0,
+			"iconfont": {
+				"text": "\ue63d",  // 讨论图标
+				"selectedText": "\ue63d",
+				"fontSize": "22px",
+				"color": "#999999",
+				"selectedColor": "#2C8A43"
+			}
+		}, {
+			"pagePath": "pages/about/about",
+			"text": "关于",
+			"fontSizeRatio": 1.0,
+			"iconfont": {
+				"text": "\ue60f",  // 使用内置图标的 unicode
+				"selectedText": "\ue60f",
+				"fontSize": "22px",
+				"color": "#999999",
+				"selectedColor": "#2C8A43"
+			}
+		}]
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarBackgroundColor": "#2C8A43",
+		"backgroundColor": "#F8F8F8"
+	},
+	"uniIdRouter": {}
+}

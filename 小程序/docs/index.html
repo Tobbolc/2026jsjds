@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>农作物病虫害识别系统文档</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #2C8A43;
+            border-bottom: 2px solid #2C8A43;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2C8A43;
+            margin-top: 30px;
+        }
+        .content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        code {
+            background: #f5f5f5;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <h1>农作物病虫害识别系统文档</h1>
+    
+    <div class="content">
+        <h2>1. 总体功能描述</h2>
+        <p>本系统是一个基于深度学习的农作物病虫害识别和社区交流平台，主要包含以下功能模块：</p>
+        <ul>
+            <li>用户认证：登录、注册、密码找回</li>
+            <li>病害识别：图像上传、自动识别、结果展示</li>
+            <li>病害知识库：病害信息查询、防治方法</li>
+            <li>社区讨论：发帖、评论、点赞、图片分享</li>
+            <li>个人中心：历史记录、收藏管理</li>
+        </ul>
+
+        <h2>2. 运行环境</h2>
+        <h3>前端环境</h3>
+        <ul>
+            <li>uni-app框架</li>
+            <li>Vue.js 2.x</li>
+            <li>微信开发者工具</li>
+        </ul>
+        
+        <h3>后端环境</h3>
+        <ul>
+            <li>Python 3.8+</li>
+            <li>Flask框架</li>
+            <li>SQLAlchemy ORM</li>
+            <li>MySQL 8.0</li>
+        </ul>
+
+        <h2>3. 软件安装说明</h2>
+        <h3>前端安装</h3>
+        <pre>
+# 安装依赖
+npm install
+
+# 运行开发环境
+npm run dev:mp-weixin
+
+# 打开微信开发者工具
+# 导入项目目录下的 dist/dev/mp-weixin 文件夹
+        </pre>
+
+        <h3>后端安装</h3>
+        <pre>
+# 创建虚拟环境
+python -m venv venv
+
+# 激活虚拟环境
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+
+# 安装依赖
+pip install -r requirements.txt
+
+# 初始化数据库
+python init_db.py
+
+# 运行服务
+python app.py
+        </pre>
+
+        <h2>4. 功能介绍</h2>
+        <h3>4.1 社区讨论功能</h3>
+        <table>
+            <tr>
+                <th>功能</th>
+                <th>说明</th>
+            </tr>
+            <tr>
+                <td>发布帖子</td>
+                <td>支持文字内容和最多9张图片，图片自动压缩</td>
+            </tr>
+            <tr>
+                <td>点赞互动</td>
+                <td>支持帖子点赞/取消，带动画效果</td>
+            </tr>
+            <tr>
+                <td>评论功能</td>
+                <td>支持发表评论，实时更新评论列表</td>
+            </tr>
+            <tr>
+                <td>图片预览</td>
+                <td>支持查看原图，多图左右滑动</td>
+            </tr>
+            <tr>
+                <td>内容展开</td>
+                <td>长文本自动折叠，点击展开全文</td>
+            </tr>
+        </table>
+
+        <h2>5. 规范文件</h2>
+        <h3>5.1 代码规范</h3>
+        <ul>
+            <li>使用 ESLint 进行代码格式化</li>
+            <li>遵循 Vue.js 官方风格指南</li>
+            <li>使用 TypeScript 进行类型检查</li>
+        </ul>
+
+        <h3>5.2 文件结构</h3>
+        <pre>
+project/
+├── src/
+│   ├── pages/          # 页面文件
+│   ├── components/     # 组件文件
+│   ├── static/         # 静态资源
+│   ├── utils/          # 工具函数
+│   └── config.js       # 配置文件
+├── server/
+│   ├── app.py         # 后端主程序
+│   ├── models/        # 数据模型
+│   └── utils/         # 工具函数
+└── docs/              # 文档文件
+        </pre>
+
+        <h3>5.3 API 接口规范</h3>
+        <table>
+            <tr>
+                <th>接口</th>
+                <th>方法</th>
+                <th>说明</th>
+            </tr>
+            <tr>
+                <td>/api/posts</td>
+                <td>GET</td>
+                <td>获取帖子列表</td>
+            </tr>
+            <tr>
+                <td>/api/posts</td>
+                <td>POST</td>
+                <td>发布新帖子</td>
+            </tr>
+            <tr>
+                <td>/api/posts/:id/like</td>
+                <td>POST</td>
+                <td>点赞/取消点赞</td>
+            </tr>
+            <tr>
+                <td>/api/posts/:id/comments</td>
+                <td>GET/POST</td>
+                <td>获取/发表评论</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html> 
