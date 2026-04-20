@@ -193,7 +193,7 @@ export default {
 <style>
 .login-container {
   min-height: 100vh;
-  background-color: #2C8A43;
+  background: linear-gradient(160deg, #2C8A43 0%, #3CA55C 55%, #7BC96F 100%);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -209,7 +209,7 @@ export default {
 }
 
 .header {
-  margin-bottom: 100rpx;
+  margin-bottom: 80rpx;
   color: #fff;
   text-align: center;
 }
@@ -228,17 +228,18 @@ export default {
 }
 
 .card {
-  background: #fff;
-  border-radius: 30rpx;
+  background: rgba(255,255,255,0.96);
+  border-radius: 32rpx;
   padding: 50rpx 40rpx;
-  box-shadow: 0 8rpx 40rpx rgba(0,0,0,0.1);
+  box-shadow: 0 16rpx 50rpx rgba(0,0,0,0.12);
+  backdrop-filter: blur(8rpx);
 }
 
 .switch-mode {
   display: flex;
   margin-bottom: 60rpx;
-  border-radius: 16rpx;
-  background: #f5f5f5;
+  border-radius: 18rpx;
+  background: #eef4ef;
   padding: 8rpx;
 }
 
@@ -253,9 +254,9 @@ export default {
 }
 
 .mode-btn.active {
-  background: #2C8A43;
+  background: linear-gradient(135deg, #2C8A43, #3CA55C);
   color: #fff;
-  box-shadow: 0 4rpx 12rpx rgba(44,138,67,0.3);
+  box-shadow: 0 6rpx 16rpx rgba(44,138,67,0.35);
 }
 
 .input-group {
@@ -274,12 +275,12 @@ export default {
 .input {
   width: 100%;
   height: 100rpx;
-  background: #f8f8f8;
+  background: #f6faf6;
   border-radius: 50rpx;
   padding: 0 40rpx;
   font-size: 30rpx;
   color: #333;
-  border: 2rpx solid #f0f0f0;
+  border: 2rpx solid #e8efe8;
   box-sizing: border-box;
 }
 
@@ -298,12 +299,12 @@ export default {
   width: 100%;
   height: 100rpx;
   line-height: 100rpx;
-  background-color: #2C8A43;
+  background: linear-gradient(135deg, #2C8A43, #3CA55C);
   color: #fff;
   font-size: 34rpx;
   border-radius: 50rpx;
   text-align: center;
-  box-shadow: 0 8rpx 20rpx rgba(44,138,67,0.3);
+  box-shadow: 0 12rpx 28rpx rgba(44,138,67,0.36);
   border: none;
   font-weight: bold;
   letter-spacing: 2rpx;
