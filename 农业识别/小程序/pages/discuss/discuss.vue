@@ -551,7 +551,7 @@ export default {
 <style>
 .container {
 	min-height: 100vh;
-	background-color: #f5f5f5;
+	background: linear-gradient(180deg, #eef7ef 0%, #f7faf7 35%, #f5f5f5 100%);
 	padding-bottom: 100rpx;
 }
 
@@ -562,7 +562,7 @@ export default {
 	bottom: 140rpx;
 	width: 100rpx;
 	height: 100rpx;
-	background: #2C8A43;
+	background: linear-gradient(135deg, #2C8A43, #3CA55C);
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
@@ -585,11 +585,12 @@ export default {
 }
 
 .post-item {
-	background: #fff;
+	background: rgba(255,255,255,0.97);
 	margin: 20rpx;
-	border-radius: 16rpx;
+	border-radius: 20rpx;
 	padding: 24rpx;
-	box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.05);
+	box-shadow: 0 8rpx 24rpx rgba(28,74,39,0.08);
+	border: 1rpx solid #e7f0e7;
 }
 
 .post-header {
@@ -608,7 +609,7 @@ export default {
 .avatar {
 	width: 80rpx;
 	height: 80rpx;
-	background: #2C8A43;
+	background: linear-gradient(135deg, #2C8A43, #3CA55C);
 	color: #fff;
 	border-radius: 50%;
 	display: flex;
@@ -691,8 +692,8 @@ export default {
 	display: flex;
 	gap: 32rpx;
 	padding: 24rpx;
-	border-top: 1rpx solid #f5f5f5;
-	border-bottom: 1rpx solid #f5f5f5;
+	border-top: 1rpx solid #eaf2ea;
+	border-bottom: 1rpx solid #eaf2ea;
 }
 
 .action-btn {
@@ -742,7 +743,7 @@ export default {
 }
 
 .count-text.liked {
-	color: #ff4444;
+	color: #d64545;
 	font-weight: 500;
 }
 
@@ -853,7 +854,7 @@ export default {
 .publish-btn-small {
 	font-size: 28rpx;
 	color: #fff;
-	background: #2C8A43;
+	background: linear-gradient(135deg, #2C8A43, #3CA55C);
 	padding: 10rpx 30rpx;
 	border-radius: 30rpx;
 	border: none;
@@ -994,7 +995,7 @@ export default {
 	width: 120rpx;
 	height: 70rpx;
 	line-height: 70rpx;
-	background: #2C8A43;
+	background: linear-gradient(135deg, #2C8A43, #3CA55C);
 	color: #fff;
 	font-size: 28rpx;
 	border-radius: 35rpx;
@@ -1038,7 +1039,7 @@ export default {
 	width: 120rpx;
 	height: 70rpx;
 	line-height: 70rpx;
-	background: #2C8A43;
+	background: linear-gradient(135deg, #2C8A43, #3CA55C);
 	color: #fff;
 	font-size: 28rpx;
 	border-radius: 35rpx;
