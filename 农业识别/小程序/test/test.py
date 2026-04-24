@@ -114,7 +114,7 @@ def main():
     print(f"Using device: {device}")
     
     # 加载模型
-    model_path = r"C:\Users\93368\Desktop\test\wheal-condition-identify-master\models\best_model_loss_0.4179_acc_0.8518.pth"
+    model_path = r"D:\1_code_study\projects\2026jsjds\农业识别\后端\best_model_loss_0.4179_acc_0.8518.pth"
     
     try:
         print(f"Loading model from: {model_path}")

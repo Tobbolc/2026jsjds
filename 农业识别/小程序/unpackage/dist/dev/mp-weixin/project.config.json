@@ -11,6 +11,20 @@
     "minified": false,
     "newFeature": true,
     "bigPackageSizeSupport": true,
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "enhance": false,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -18,8 +32,8 @@
     }
   },
   "compileType": "miniprogram",
-  "libVersion": "3.7.11",
-  "appid": "touristappid",
+  "libVersion": "3.15.2",
+  "appid": "wx220936753d4b06f7",
   "projectname": "基于ResNet50的病虫害识别及防治预警系统",
   "condition": {
     "search": {
@@ -39,8 +53,6 @@
       "list": []
     }
   },
-  "editorSetting": {
-    "tabIndent": "insertSpaces",
-    "tabSize": 2
-  }
+  "simulatorPluginLibVersion": {},
+  "editorSetting": {}
 }
