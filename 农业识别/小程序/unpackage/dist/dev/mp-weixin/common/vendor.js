@@ -39,6 +39,15 @@ function initWx() {
   return newWx;
 }
 target[key] = initWx();
+if (!target[key].canIUse('getAppBaseInfo')) {
+  target[key].getAppBaseInfo = target[key].getSystemInfoSync;
+}
+if (!target[key].canIUse('getWindowInfo')) {
+  target[key].getWindowInfo = target[key].getSystemInfoSync;
+}
+if (!target[key].canIUse('getDeviceInfo')) {
+  target[key].getDeviceInfo = target[key].getSystemInfoSync;
+}
 var _default = target[key];
 exports.default = _default;
 
@@ -364,7 +373,7 @@ var promiseInterceptor = {
     });
   }
 };
-var SYNC_API_RE = /^\$|Window$|WindowStyle$|sendHostEvent|sendNativeEvent|restoreGlobal|requireGlobal|getCurrentSubNVue|getMenuButtonBoundingClientRect|^report|interceptors|Interceptor$|getSubNVueById|requireNativePlugin|rpx2px|upx2px|hideKeyboard|canIUse|^create|Sync$|Manager$|base64ToArrayBuffer|arrayBufferToBase64|getLocale|setLocale|invokePushCallback|getWindowInfo|getDeviceInfo|getAppBaseInfo|getSystemSetting|getAppAuthorizeSetting|initUTS|requireUTS|registerUTS/;
+var SYNC_API_RE = /^\$|__f__|Window$|WindowStyle$|sendHostEvent|sendNativeEvent|restoreGlobal|requireGlobal|getCurrentSubNVue|getMenuButtonBoundingClientRect|^report|interceptors|Interceptor$|getSubNVueById|requireNativePlugin|rpx2px|upx2px|hideKeyboard|canIUse|^create|Sync$|Manager$|base64ToArrayBuffer|arrayBufferToBase64|getLocale|setLocale|invokePushCallback|getWindowInfo|getDeviceInfo|getAppBaseInfo|getSystemSetting|getAppAuthorizeSetting|initUTS|requireUTS|registerUTS/;
 var CONTEXT_API_RE = /^create|Manager$/;
 
 // Context例外情况
@@ -421,7 +430,7 @@ function promisify(name, api) {
       params[_key2 - 1] = arguments[_key2];
     }
     if (isFn(options.success) || isFn(options.fail) || isFn(options.complete)) {
-      return wrapperReturnValue(name, invokeApi.apply(void 0, [name, api, options].concat(params)));
+      return wrapperReturnValue(name, invokeApi.apply(void 0, [name, api, Object.assign({}, options)].concat(params)));
     }
     return wrapperReturnValue(name, handlePromise(new Promise(function (resolve, reject) {
       invokeApi.apply(void 0, [name, api, Object.assign({}, options, {
@@ -437,13 +446,14 @@ var isIOS = false;
 var deviceWidth = 0;
 var deviceDPR = 0;
 function checkDeviceWidth() {
-  var _Object$assign = Object.assign({}, wx.getWindowInfo(), {
-      platform: wx.getDeviceInfo().platform
-    }),
-    windowWidth = _Object$assign.windowWidth,
-    pixelRatio = _Object$assign.pixelRatio,
-    platform = _Object$assign.platform; // uni=>wx runtime 编译目标是 uni 对象，内部不允许直接使用 uni
-
+  var windowWidth, pixelRatio, platform;
+  {
+    var windowInfo = typeof wx.getWindowInfo === 'function' && wx.getWindowInfo() ? wx.getWindowInfo() : wx.getSystemInfoSync();
+    var deviceInfo = typeof wx.getDeviceInfo === 'function' && wx.getDeviceInfo() ? wx.getDeviceInfo() : wx.getSystemInfoSync();
+    windowWidth = windowInfo.windowWidth;
+    pixelRatio = windowInfo.pixelRatio;
+    platform = deviceInfo.platform;
+  }
   deviceWidth = windowWidth;
   deviceDPR = pixelRatio;
   isIOS = platform === 'ios';
@@ -476,9 +486,18 @@ var LOCALE_EN = 'en';
 var LOCALE_FR = 'fr';
 var LOCALE_ES = 'es';
 var messages = {};
+function getLocaleLanguage() {
+  var localeLanguage = '';
+  {
+    var appBaseInfo = typeof wx.getAppBaseInfo === 'function' && wx.getAppBaseInfo() ? wx.getAppBaseInfo() : wx.getSystemInfoSync();
+    var language = appBaseInfo && appBaseInfo.language ? appBaseInfo.language : LOCALE_EN;
+    localeLanguage = normalizeLocale(language) || LOCALE_EN;
+  }
+  return localeLanguage;
+}
 var locale;
 {
-  locale = normalizeLocale(wx.getAppBaseInfo().language) || LOCALE_EN;
+  locale = getLocaleLanguage();
 }
 function initI18nMessages() {
   if (!isEnableLocale()) {
@@ -600,7 +619,7 @@ function getLocale$1() {
       return app.$vm.$locale;
     }
   }
-  return normalizeLocale(wx.getAppBaseInfo().language) || LOCALE_EN;
+  return getLocaleLanguage();
 }
 function setLocale$1(locale) {
   var app = isFn(getApp) ? getApp() : false;
@@ -729,6 +748,43 @@ function addSafeAreaInsets(result) {
     };
   }
 }
+function getOSInfo(system, platform) {
+  var osName = '';
+  var osVersion = '';
+  if (platform && "mp-weixin" === 'mp-baidu') {
+    osName = platform;
+    osVersion = system;
+  } else {
+    osName = system.split(' ')[0] || platform;
+    osVersion = system.split(' ')[1] || '';
+  }
+  osName = osName.toLocaleLowerCase();
+  switch (osName) {
+    case 'harmony': // alipay
+    case 'ohos': // weixin
+    case 'openharmony':
+      // feishu
+      osName = 'harmonyos';
+      break;
+    case 'iphone os':
+      // alipay
+      osName = 'ios';
+      break;
+    case 'mac': // weixin qq
+    case 'darwin':
+      // feishu
+      osName = 'macos';
+      break;
+    case 'windows_nt':
+      // feishu
+      osName = 'windows';
+      break;
+  }
+  return {
+    osName: osName,
+    osVersion: osVersion
+  };
+}
 function populateParameters(result) {
   var _result$brand = result.brand,
     brand = _result$brand === void 0 ? '' : _result$brand,
@@ -750,12 +806,9 @@ function populateParameters(result) {
   var extraParam = {};
 
   // osName osVersion
-  var osName = '';
-  var osVersion = '';
-  {
-    osName = system.split(' ')[0] || '';
-    osVersion = system.split(' ')[1] || '';
-  }
+  var _getOSInfo = getOSInfo(system, platform),
+    osName = _getOSInfo.osName,
+    osVersion = _getOSInfo.osVersion;
   var hostVersion = version;
 
   // deviceType
@@ -787,9 +840,9 @@ function populateParameters(result) {
     appVersion: "1.0.0",
     appVersionCode: "100",
     appLanguage: getAppLanguage(hostLanguage),
-    uniCompileVersion: "4.45",
-    uniCompilerVersion: "4.45",
-    uniRuntimeVersion: "4.45",
+    uniCompileVersion: "4.76",
+    uniCompilerVersion: "4.76",
+    uniRuntimeVersion: "4.76",
     uniPlatform: undefined || "mp-weixin",
     deviceBrand: deviceBrand,
     deviceModel: model,
@@ -895,9 +948,9 @@ var getAppBaseInfo = {
       hostTheme: theme,
       isUniAppX: false,
       uniPlatform: undefined || "mp-weixin",
-      uniCompileVersion: "4.45",
-      uniCompilerVersion: "4.45",
-      uniRuntimeVersion: "4.45"
+      uniCompileVersion: "4.76",
+      uniCompilerVersion: "4.76",
+      uniRuntimeVersion: "4.76"
     }));
   }
 };
@@ -905,14 +958,23 @@ var getDeviceInfo = {
   returnValue: function returnValue(result) {
     var _result2 = result,
       brand = _result2.brand,
-      model = _result2.model;
+      model = _result2.model,
+      _result2$system = _result2.system,
+      system = _result2$system === void 0 ? '' : _result2$system,
+      _result2$platform = _result2.platform,
+      platform = _result2$platform === void 0 ? '' : _result2$platform;
     var deviceType = getGetDeviceType(result, model);
     var deviceBrand = getDeviceBrand(brand);
     useDeviceId(result);
+    var _getOSInfo2 = getOSInfo(system, platform),
+      osName = _getOSInfo2.osName,
+      osVersion = _getOSInfo2.osVersion;
     result = sortObject(Object.assign(result, {
       deviceType: deviceType,
       deviceBrand: deviceBrand,
-      deviceModel: model
+      deviceModel: model,
+      osName: osName,
+      osVersion: osVersion
     }));
   }
 };
@@ -1262,6 +1324,12 @@ var offPushMessage = function offPushMessage(fn) {
     }
   }
 };
+function __f__(type) {
+  for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+    args[_key3 - 1] = arguments[_key3];
+  }
+  console[type].apply(console, args);
+}
 var baseInfo = wx.getAppBaseInfo && wx.getAppBaseInfo();
 if (!baseInfo) {
   baseInfo = wx.getSystemInfoSync();
@@ -1274,7 +1342,8 @@ var api = /*#__PURE__*/Object.freeze({
   getPushClientId: getPushClientId,
   onPushMessage: onPushMessage,
   offPushMessage: offPushMessage,
-  invokePushCallback: invokePushCallback
+  invokePushCallback: invokePushCallback,
+  __f__: __f__
 });
 var mocks = ['__route__', '__wxExparserNodeId__', '__wxWebviewId__'];
 function findVmByVueId(vm, vuePid) {
@@ -1416,8 +1485,8 @@ var customize = cached(function (str) {
 function initTriggerEvent(mpInstance) {
   var oldTriggerEvent = mpInstance.triggerEvent;
   var newTriggerEvent = function newTriggerEvent(event) {
-    for (var _len3 = arguments.length, args = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-      args[_key3 - 1] = arguments[_key3];
+    for (var _len4 = arguments.length, args = new Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
+      args[_key4 - 1] = arguments[_key4];
     }
     // 事件名统一转驼峰格式，仅处理：当前组件为 vue 组件、当前组件为 vue 组件子组件
     if (this.$vm || this.dataset && this.dataset.comType) {
@@ -1444,8 +1513,8 @@ function initHook(name, options, isComponent) {
     markMPComponent(this);
     initTriggerEvent(this);
     if (oldHook) {
-      for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-        args[_key4] = arguments[_key4];
+      for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+        args[_key5] = arguments[_key5];
       }
       return oldHook.apply(this, args);
     }
@@ -2124,10 +2193,19 @@ function parseBaseApp(vm, _ref4) {
       appOptions[name] = methods[name];
     });
   }
-  initAppLocale(_vue.default, vm, normalizeLocale(wx.getAppBaseInfo().language) || LOCALE_EN);
+  initAppLocale(_vue.default, vm, getLocaleLanguage$1());
   initHooks(appOptions, hooks);
   initUnknownHooks(appOptions, vm.$options);
   return appOptions;
+}
+function getLocaleLanguage$1() {
+  var localeLanguage = '';
+  {
+    var appBaseInfo = wx.getAppBaseInfo();
+    var language = appBaseInfo && appBaseInfo.language ? appBaseInfo.language : LOCALE_EN;
+    localeLanguage = normalizeLocale(language) || LOCALE_EN;
+  }
+  return localeLanguage;
 }
 function parseApp(vm) {
   return parseBaseApp(vm, {
@@ -2345,16 +2423,16 @@ function createSubpackageApp(vm) {
   });
   if (isFn(appOptions.onShow) && wx.onAppShow) {
     wx.onAppShow(function () {
-      for (var _len5 = arguments.length, args = new Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
-        args[_key5] = arguments[_key5];
+      for (var _len6 = arguments.length, args = new Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+        args[_key6] = arguments[_key6];
       }
       vm.__call_hook('onShow', args);
     });
   }
   if (isFn(appOptions.onHide) && wx.onAppHide) {
     wx.onAppHide(function () {
-      for (var _len6 = arguments.length, args = new Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
-        args[_key6] = arguments[_key6];
+      for (var _len7 = arguments.length, args = new Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
+        args[_key7] = arguments[_key7];
       }
       vm.__call_hook('onHide', args);
     });
@@ -2369,16 +2447,16 @@ function createPlugin(vm) {
   var appOptions = parseApp(vm);
   if (isFn(appOptions.onShow) && wx.onAppShow) {
     wx.onAppShow(function () {
-      for (var _len7 = arguments.length, args = new Array(_len7), _key7 = 0; _key7 < _len7; _key7++) {
-        args[_key7] = arguments[_key7];
+      for (var _len8 = arguments.length, args = new Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
+        args[_key8] = arguments[_key8];
       }
       vm.__call_hook('onShow', args);
     });
   }
   if (isFn(appOptions.onHide) && wx.onAppHide) {
     wx.onAppHide(function () {
-      for (var _len8 = arguments.length, args = new Array(_len8), _key8 = 0; _key8 < _len8; _key8++) {
-        args[_key8] = arguments[_key8];
+      for (var _len9 = arguments.length, args = new Array(_len9), _key9 = 0; _key9 < _len9; _key9++) {
+        args[_key9] = arguments[_key9];
       }
       vm.__call_hook('onHide', args);
     });
@@ -9670,7 +9748,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _default = {
-  baseUrl: 'http://localhost:5000' // 修改为Flask后端运行的地址
+  baseUrl: 'http://10.150.239.22:5000' // 修改为Flask后端运行的地址
   // 其他配置...
 };
 exports.default = _default;
