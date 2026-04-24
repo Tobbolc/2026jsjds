@@ -1,6 +1,11 @@
 <template>
 	<view class="container">
+	<view class="status-ambience"></view>
 	<view class="content">
+			<view class="hero">
+				<view class="hero-title">识别中心</view>
+				<text class="hero-subtitle">清爽专业 · 识别高效 · 安全可信</text>
+			</view>
 			<!-- 主要功能区 -->
 			<view class="main">
 				<!-- 用户信息卡片 -->
@@ -49,6 +54,7 @@
 								<image :src="getImageUrl(item.imagePath)" mode="aspectFill" class="history-image"></image>
 								<view class="history-info">
 									<text class="disease-name">{{item.diseaseName}}</text>
+									<text class="status-tag">已识别</text>
 									<text class="crop-name">作物：{{item.cropName}}</text>
 									<text class="confidence">置信度: {{item.confidence}}%</text>
 									<text class="time">{{item.createTime}}</text>
@@ -404,8 +410,18 @@ import config from '@/config.js'
 <style>
 .container {
 	min-height: 100vh;
-	background: linear-gradient(180deg, #dceaf2 0%, #edf6f0 32%, #eaf3ea 100%);
+	background: linear-gradient(180deg, #dceaf2 0%, #eef7f1 34%, #eaf3ea 100%);
 	padding-bottom: 100rpx; /* 为底部tabBar留出空间 */
+}
+
+.status-ambience {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 138rpx;
+	background: linear-gradient(90deg, rgba(53, 156, 74, 0.84), rgba(68, 170, 88, 0.65));
+	z-index: 0;
 }
 
 	.content {
@@ -421,6 +437,27 @@ import config from '@/config.js'
 	display: flex;
 	flex-direction: column;
 	gap: 24rpx;
+}
+
+.hero {
+	margin: 24rpx;
+	padding: 28rpx;
+	border-radius: 26rpx;
+	background: linear-gradient(135deg, rgba(45, 151, 65, 0.2), rgba(255, 255, 255, 0.65));
+	border: 2rpx solid rgba(255, 255, 255, 0.7);
+}
+
+.hero-title {
+	font-size: 44rpx;
+	font-weight: 700;
+	color: #1f6a32;
+}
+
+.hero-subtitle {
+	margin-top: 12rpx;
+	font-size: 25rpx;
+	color: #4f6f55;
+	display: block;
 }
 
 .user-card {
@@ -516,6 +553,19 @@ import config from '@/config.js'
 	font-size: 32rpx;
 	border-radius: 44rpx;
 	margin-top: 30rpx;
+	position: relative;
+	overflow: hidden;
+}
+
+.submit-btn::after {
+	content: '';
+	position: absolute;
+	right: -40rpx;
+	bottom: -50rpx;
+	width: 210rpx;
+	height: 140rpx;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(132,212,138,0.42), rgba(132,212,138,0) 72%);
 }
 
 .submit-btn[disabled] {
@@ -582,6 +632,17 @@ import config from '@/config.js'
 	color: #666;
 	margin-bottom: 6rpx;
 	display: block;
+}
+
+.status-tag {
+	display: inline-block;
+	padding: 4rpx 14rpx;
+	margin-bottom: 6rpx;
+	border-radius: 999rpx;
+	font-size: 20rpx;
+	color: #2e8f40;
+	background: rgba(70, 172, 90, 0.14);
+	border: 1rpx solid rgba(70, 172, 90, 0.35);
 }
 
 .confidence {

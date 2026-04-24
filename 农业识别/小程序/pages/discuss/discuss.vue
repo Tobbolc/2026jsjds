@@ -1,5 +1,10 @@
 <template>
 	<view class="container">
+		<view class="status-ambience"></view>
+		<view class="hero">
+			<text class="hero-title">农业社区</text>
+			<text class="hero-subtitle">交流经验 · 共享识别案例</text>
+		</view>
 		<!-- 发布按钮 -->
 		<view class="publish-btn" @tap="showPublishPopup">
 			<text class="plus-icon">+</text>
@@ -19,10 +24,11 @@
 				<view class="post-header">
 					<view class="user-info">
 						<view class="avatar">{{post.username[0]}}</view>
-						<view class="user-meta">
-							<text class="username">{{post.username}}</text>
-							<text class="time">{{post.create_time}}</text>
-						</view>
+							<view class="user-meta">
+								<text class="username">{{post.username}}</text>
+								<text class="status-tag">交流中</text>
+								<text class="time">{{post.create_time}}</text>
+							</view>
 					</view>
 					<view class="more-btn">
 						<uni-icons type="more-filled" size="20" color="#999"></uni-icons>
@@ -555,6 +561,38 @@ export default {
 	padding-bottom: 100rpx;
 }
 
+.status-ambience {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 138rpx;
+	background: linear-gradient(90deg, rgba(53, 156, 74, 0.84), rgba(68, 170, 88, 0.65));
+	z-index: 0;
+}
+
+.hero {
+	margin: 20rpx 20rpx 0;
+	padding: 24rpx 28rpx;
+	border-radius: 24rpx;
+	background: linear-gradient(135deg, rgba(45, 151, 65, 0.2), rgba(255, 255, 255, 0.65));
+	border: 2rpx solid rgba(255, 255, 255, 0.72);
+}
+
+.hero-title {
+	font-size: 42rpx;
+	font-weight: 700;
+	color: #1f6a32;
+	display: block;
+}
+
+.hero-subtitle {
+	margin-top: 10rpx;
+	font-size: 24rpx;
+	color: #4f6f55;
+	display: block;
+}
+
 /* 发布按钮 */
 .publish-btn {
 	position: fixed;
@@ -569,6 +607,18 @@ export default {
 	justify-content: center;
 	box-shadow: 0 4rpx 16rpx rgba(44,138,67,0.3);
 	z-index: 100;
+	overflow: hidden;
+}
+
+.publish-btn::after {
+	content: '';
+	position: absolute;
+	width: 120rpx;
+	height: 120rpx;
+	right: -30rpx;
+	bottom: -30rpx;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(132,212,138,0.45), rgba(132,212,138,0) 72%);
 }
 
 .plus-icon {
@@ -634,6 +684,18 @@ export default {
 .time {
 	font-size: 24rpx;
 	color: #999;
+}
+
+.status-tag {
+	display: inline-block;
+	width: fit-content;
+	margin-top: 2rpx;
+	padding: 2rpx 12rpx;
+	border-radius: 999rpx;
+	font-size: 20rpx;
+	color: #2e8f40;
+	background: rgba(70, 172, 90, 0.14);
+	border: 1rpx solid rgba(70, 172, 90, 0.35);
 }
 
 .post-content {
@@ -859,6 +921,8 @@ export default {
 	border-radius: 30rpx;
 	border: none;
 	margin: 0;
+	position: relative;
+	overflow: hidden;
 }
 
 .publish-btn-small[disabled] {
@@ -1000,6 +1064,8 @@ export default {
 	font-size: 28rpx;
 	border-radius: 35rpx;
 	padding: 0;
+	position: relative;
+	overflow: hidden;
 }
 
 .comment-btn[disabled] {
@@ -1044,6 +1110,8 @@ export default {
 	font-size: 28rpx;
 	border-radius: 35rpx;
 	padding: 0;
+	position: relative;
+	overflow: hidden;
 }
 
 .send-btn[disabled] {

@@ -1,5 +1,9 @@
 <template>
   <view class="login-container">
+    <view class="status-ambience"></view>
+    <view class="hero-bg"></view>
+    <view class="leaf-corner leaf-left"></view>
+    <view class="leaf-corner leaf-right"></view>
     <view class="content">
       <!-- 顶部标题区域 -->
       <view class="header">
@@ -25,57 +29,72 @@
         <view class="form-section">
           <view class="input-group">
             <text class="label">账号</text>
-            <input 
-              class="input" 
-              v-model="formData.username" 
-              placeholder="请输入用户名" 
-            />
+            <view class="input-wrap">
+              <uni-icons type="person" size="22" color="#39A94B"></uni-icons>
+              <input
+                class="input"
+                v-model="formData.username"
+                placeholder="请输入用户名"
+              />
+            </view>
           </view>
           
           <view class="input-group">
             <text class="label">密码</text>
-            <input 
-              class="input" 
-              v-model="formData.password" 
-              type="password" 
-              placeholder="请输入密码" 
-            />
+            <view class="input-wrap">
+              <uni-icons type="locked" size="22" color="#39A94B"></uni-icons>
+              <input
+                class="input"
+                v-model="formData.password"
+                type="password"
+                placeholder="请输入密码"
+              />
+            </view>
           </view>
           
           <!-- 注册时显示的额外字段 -->
           <template v-if="!isLogin">
             <view class="input-group">
               <text class="label">确认密码</text>
-              <input 
-                class="input" 
-                v-model="formData.confirmPassword" 
-                type="password" 
-                placeholder="请再次输入密码" 
-              />
+              <view class="input-wrap">
+                <uni-icons type="locked" size="22" color="#39A94B"></uni-icons>
+                <input
+                  class="input"
+                  v-model="formData.confirmPassword"
+                  type="password"
+                  placeholder="请再次输入密码"
+                />
+              </view>
             </view>
             
             <view class="input-group">
               <text class="label">邮箱</text>
-              <input 
-                class="input" 
-                v-model="formData.email" 
-                type="text" 
-                placeholder="请输入邮箱" 
-              />
+              <view class="input-wrap">
+                <uni-icons type="email" size="22" color="#39A94B"></uni-icons>
+                <input
+                  class="input"
+                  v-model="formData.email"
+                  type="text"
+                  placeholder="请输入邮箱"
+                />
+              </view>
             </view>
             
             <view class="input-group">
               <text class="label">手机号</text>
-              <input 
-                class="input" 
-                v-model="formData.phone" 
-                type="number" 
-                placeholder="请输入手机号" 
-              />
+              <view class="input-wrap">
+                <uni-icons type="phone" size="22" color="#39A94B"></uni-icons>
+                <input
+                  class="input"
+                  v-model="formData.phone"
+                  type="number"
+                  placeholder="请输入手机号"
+                />
+              </view>
             </view>
           </template>
         </view>
-        
+
         <!-- 提交按钮 -->
         <button class="submit-btn" @tap="handleSubmit">
           {{ isLogin ? '登 录' : '注 册' }}
@@ -193,7 +212,7 @@ export default {
 <style>
 .login-container {
   min-height: 100vh;
-  background: linear-gradient(180deg, #d9eaf3 0%, #edf6f0 34%, #e8f2e8 100%);
+  background: linear-gradient(180deg, #d9e8f3 0%, #eff8f2 42%, #eaf3eb 100%);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -201,9 +220,48 @@ export default {
   overflow: hidden;
 }
 
+.status-ambience {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 160rpx;
+  background: linear-gradient(90deg, rgba(53, 156, 74, 0.88), rgba(68, 170, 88, 0.72));
+}
+
+.hero-bg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 520rpx;
+  background: linear-gradient(135deg, rgba(52, 160, 75, 0.24), rgba(77, 180, 98, 0.08));
+}
+
+.leaf-corner {
+  position: absolute;
+  width: 220rpx;
+  height: 220rpx;
+  border-radius: 50%;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 40% 35%, rgba(78, 178, 98, 0.42), transparent 54%),
+    radial-gradient(circle at 70% 65%, rgba(57, 161, 77, 0.28), transparent 58%);
+}
+
+.leaf-left {
+  left: -90rpx;
+  top: 120rpx;
+}
+
+.leaf-right {
+  right: -90rpx;
+  bottom: -10rpx;
+}
+
 .content {
   flex: 1;
-  padding: 120rpx 34rpx 50rpx;
+  padding: 130rpx 34rpx 50rpx;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -234,7 +292,7 @@ export default {
 }
 
 .header {
-  margin-bottom: 56rpx;
+  margin-bottom: 48rpx;
   color: #185d2a;
   text-align: left;
 }
@@ -263,7 +321,7 @@ export default {
 }
 
 .card {
-  background: rgba(255,255,255,0.88);
+  background: rgba(255,255,255,0.9);
   border-radius: 36rpx;
   padding: 46rpx 34rpx;
   box-shadow: 0 16rpx 40rpx rgba(41,91,45,0.12);
@@ -322,21 +380,26 @@ export default {
 }
 
 .input {
-  width: 100%;
+  flex: 1;
   height: 94rpx;
-  background: #f7faf7;
+  background: transparent;
   border-radius: 46rpx;
-  padding: 0 34rpx;
+  padding: 0 12rpx;
   font-size: 30rpx;
   color: #4a544d;
-  border: 2rpx solid #e5ece5;
+  border: none;
   box-sizing: border-box;
 }
 
-.input:focus {
-  background: #fff;
-  border-color: #2C8A43;
-  box-shadow: 0 4rpx 12rpx rgba(44,138,67,0.1);
+.input-wrap {
+  height: 94rpx;
+  border-radius: 46rpx;
+  background: #f7faf7;
+  border: 2rpx solid #e5ece5;
+  padding: 0 26rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
 }
 
 .input::placeholder {
@@ -357,6 +420,19 @@ export default {
   border: none;
   font-weight: bold;
   letter-spacing: 2rpx;
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-btn::after {
+  content: '';
+  position: absolute;
+  width: 220rpx;
+  height: 140rpx;
+  right: -30rpx;
+  bottom: -46rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(132, 212, 138, 0.42), rgba(132, 212, 138, 0) 72%);
 }
 
 .submit-btn:active {
