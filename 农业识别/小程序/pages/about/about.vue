@@ -133,13 +133,13 @@ export default {
 <style>
 .container {
 	min-height: 100vh;
-	background: linear-gradient(180deg, #eef7ef 0%, #f7faf7 35%, #f5f5f5 100%);
+	background: linear-gradient(180deg, #dceaf2 0%, #edf6f0 28%, #eaf3ea 100%);
 }
 
 .header {
-	background: linear-gradient(135deg, #2C8A43, #3CA55C);
-	padding: 40rpx;
-	color: #fff;
+	background: transparent;
+	padding: 36rpx 30rpx 8rpx;
+	color: #1f5e2f;
 }
 
 .title {
@@ -152,11 +152,12 @@ export default {
 }
 
 .section {
-	background: rgba(255,255,255,0.97);
-	border-radius: 20rpx;
+	background: rgba(255,255,255,0.86);
+	border-radius: 28rpx;
 	padding: 30rpx;
 	margin-bottom: 30rpx;
-	box-shadow: 0 8rpx 24rpx rgba(28,74,39,0.08);
+	box-shadow: 0 12rpx 28rpx rgba(45,96,51,0.09);
+	border: 2rpx solid rgba(255,255,255,0.66);
 }
 
 .section-header {

@@ -551,7 +551,7 @@ export default {
 <style>
 .container {
 	min-height: 100vh;
-	background: linear-gradient(180deg, #eef7ef 0%, #f7faf7 35%, #f5f5f5 100%);
+	background: linear-gradient(180deg, #dceaf2 0%, #edf6f0 32%, #eaf3ea 100%);
 	padding-bottom: 100rpx;
 }
 
@@ -585,12 +585,12 @@ export default {
 }
 
 .post-item {
-	background: rgba(255,255,255,0.97);
+	background: rgba(255,255,255,0.86);
 	margin: 20rpx;
-	border-radius: 20rpx;
+	border-radius: 28rpx;
 	padding: 24rpx;
-	box-shadow: 0 8rpx 24rpx rgba(28,74,39,0.08);
-	border: 1rpx solid #e7f0e7;
+	box-shadow: 0 12rpx 28rpx rgba(45,96,51,0.09);
+	border: 2rpx solid rgba(255,255,255,0.66);
 }
 
 .post-header {

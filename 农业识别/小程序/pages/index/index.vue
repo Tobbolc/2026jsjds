@@ -404,7 +404,7 @@ import config from '@/config.js'
 <style>
 .container {
 	min-height: 100vh;
-	background: linear-gradient(180deg, #eef7ef 0%, #f8fbf8 40%, #f5f5f5 100%);
+	background: linear-gradient(180deg, #dceaf2 0%, #edf6f0 32%, #eaf3ea 100%);
 	padding-bottom: 100rpx; /* 为底部tabBar留出空间 */
 }
 
@@ -417,17 +417,18 @@ import config from '@/config.js'
 
 .main {
 	flex: 1;
-	padding: 20rpx;  /* 减小整体内边距 */
+	padding: 24rpx;
 	display: flex;
 	flex-direction: column;
-	gap: 20rpx;  /* 减小卡片之间的间距 */
+	gap: 24rpx;
 }
 
 .user-card {
-	background: rgba(255, 255, 255, 0.95);
-	border-radius: 20rpx;
+	background: rgba(255, 255, 255, 0.86);
+	border-radius: 28rpx;
 	padding: 30rpx;
-	box-shadow: 0 8rpx 24rpx rgba(28, 74, 39, 0.08);
+	box-shadow: 0 12rpx 28rpx rgba(45,96,51,0.09);
+	border: 2rpx solid rgba(255,255,255,0.66);
 	margin-bottom: 20rpx;  /* 减小底部间距 */
 }
 
@@ -452,10 +453,11 @@ import config from '@/config.js'
 }
 
 .function-card, .history-card {
-	background: rgba(255, 255, 255, 0.96);
-	border-radius: 20rpx;
+	background: rgba(255, 255, 255, 0.86);
+	border-radius: 28rpx;
 	padding: 30rpx;
-	box-shadow: 0 8rpx 24rpx rgba(28, 74, 39, 0.08);
+	box-shadow: 0 12rpx 28rpx rgba(45,96,51,0.09);
+	border: 2rpx solid rgba(255,255,255,0.66);
 }
 
 .card-title {
