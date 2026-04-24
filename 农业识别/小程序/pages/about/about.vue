@@ -133,13 +133,13 @@ export default {
 <style>
 .container {
 	min-height: 100vh;
-	background-color: #f5f5f5;
+	background: linear-gradient(180deg, #dceaf2 0%, #edf6f0 28%, #eaf3ea 100%);
 }
 
 .header {
-	background-color: #2C8A43;
-	padding: 40rpx;
-	color: #fff;
+	background: transparent;
+	padding: 36rpx 30rpx 8rpx;
+	color: #1f5e2f;
 }
 
 .title {
@@ -152,10 +152,12 @@ export default {
 }
 
 .section {
-	background: #fff;
-	border-radius: 20rpx;
+	background: rgba(255,255,255,0.86);
+	border-radius: 28rpx;
 	padding: 30rpx;
 	margin-bottom: 30rpx;
+	box-shadow: 0 12rpx 28rpx rgba(45,96,51,0.09);
+	border: 2rpx solid rgba(255,255,255,0.66);
 }
 
 .section-header {
@@ -207,10 +209,10 @@ export default {
 }
 
 .collapse-item {
-	background: #fff;
+	background: #fbfdfb;
 	border-radius: 16rpx;
 	overflow: hidden;
-	border: 2rpx solid #f0f0f0;
+	border: 2rpx solid #e7f0e7;
 }
 
 .collapse-header {
@@ -218,7 +220,7 @@ export default {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	background: #f8f8f8;
+	background: #f2f8f2;
 }
 
 .crop-name {

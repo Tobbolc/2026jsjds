@@ -404,7 +404,7 @@ import config from '@/config.js'
 <style>
 .container {
 	min-height: 100vh;
-	background-color: #f5f5f5;
+	background: linear-gradient(180deg, #dceaf2 0%, #edf6f0 32%, #eaf3ea 100%);
 	padding-bottom: 100rpx; /* 为底部tabBar留出空间 */
 }
 
@@ -417,17 +417,18 @@ import config from '@/config.js'
 
 .main {
 	flex: 1;
-	padding: 20rpx;  /* 减小整体内边距 */
+	padding: 24rpx;
 	display: flex;
 	flex-direction: column;
-	gap: 20rpx;  /* 减小卡片之间的间距 */
+	gap: 24rpx;
 }
 
 .user-card {
-	background: #fff;
-	border-radius: 20rpx;
+	background: rgba(255, 255, 255, 0.86);
+	border-radius: 28rpx;
 	padding: 30rpx;
-	box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+	box-shadow: 0 12rpx 28rpx rgba(45,96,51,0.09);
+	border: 2rpx solid rgba(255,255,255,0.66);
 	margin-bottom: 20rpx;  /* 减小底部间距 */
 }
 
@@ -447,15 +448,16 @@ import config from '@/config.js'
 	font-size: 28rpx;
 	color: #fff;
 	padding: 10rpx 20rpx;
-	background: #2C8A43;
+	background: linear-gradient(135deg, #2C8A43, #3CA55C);
 	border-radius: 30rpx;
 }
 
 .function-card, .history-card {
-	background: #fff;
-	border-radius: 20rpx;
+	background: rgba(255, 255, 255, 0.86);
+	border-radius: 28rpx;
 	padding: 30rpx;
-	box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+	box-shadow: 0 12rpx 28rpx rgba(45,96,51,0.09);
+	border: 2rpx solid rgba(255,255,255,0.66);
 }
 
 .card-title {
@@ -463,6 +465,8 @@ import config from '@/config.js'
 	font-weight: bold;
 	color: #333;
 	margin-bottom: 30rpx;
+	padding-left: 16rpx;
+	border-left: 8rpx solid #2C8A43;
 }
 
 .upload-section {
@@ -472,13 +476,13 @@ import config from '@/config.js'
 .upload-box {
 	width: 100%;
 	height: 400rpx;
-	background: #f8f8f8;
+	background: #f7fbf7;
 	border-radius: 16rpx;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-	border: 2rpx dashed #ddd;
+	border: 2rpx dashed #b7d9bf;
 }
 
 .preview-image {
@@ -507,7 +511,7 @@ import config from '@/config.js'
 	width: 100%;
 	height: 88rpx;
 	line-height: 88rpx;
-	background: #2C8A43;
+	background: linear-gradient(135deg, #2C8A43, #3CA55C);
 	color: #fff;
 	font-size: 32rpx;
 	border-radius: 44rpx;
@@ -541,8 +545,8 @@ import config from '@/config.js'
 	display: flex;
 	align-items: center;
 	padding: 20rpx;
-	border-bottom: 2rpx solid #f5f5f5;
-	background: #fff;
+	border-bottom: 2rpx solid #edf4ee;
+	background: transparent;
 	/* 确保每个项目有固定高度 */
 	min-height: 120rpx;
 }
@@ -582,7 +586,7 @@ import config from '@/config.js'
 
 .confidence {
 	font-size: 24rpx;
-	color: #2C8A43;
+	color: #1f7a34;
 	margin-bottom: 6rpx;
 	display: block;
 }
@@ -695,11 +699,11 @@ import config from '@/config.js'
 }
 
 .status-warning {
-	color: #FFA500 !important;
+	color: #d98307 !important;
 }
 
 .status-danger {
-	color: #FF4444 !important;
+	color: #d64545 !important;
 }
 
 .loading-more, .no-more {
