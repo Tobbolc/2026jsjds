@@ -1,7 +1,11 @@
 <template>
 	<view class="container">
+		<view class="status-ambience"></view>
+		<view class="leaf-corner leaf-left"></view>
+		<view class="leaf-corner leaf-right"></view>
 		<view class="header">
 			<text class="title">关于我们</text>
+			<text class="header-subtitle">智慧农业 · 病虫害识别与预警系统</text>
 		</view>
 		
 		<view class="content">
@@ -133,18 +137,57 @@ export default {
 <style>
 .container {
 	min-height: 100vh;
-	background-color: #f5f5f5;
+	background: linear-gradient(180deg, #dceaf2 0%, #edf6f0 28%, #eaf3ea 100%);
+}
+
+.status-ambience {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 138rpx;
+	background: linear-gradient(90deg, rgba(53, 156, 74, 0.84), rgba(68, 170, 88, 0.65));
+	z-index: 0;
+}
+
+.leaf-corner {
+	position: absolute;
+	width: 180rpx;
+	height: 180rpx;
+	border-radius: 50%;
+	z-index: 1;
+	background:
+		radial-gradient(circle at 40% 35%, rgba(78, 178, 98, 0.35), transparent 56%),
+		radial-gradient(circle at 70% 65%, rgba(57, 161, 77, 0.2), transparent 60%);
+}
+
+.leaf-left {
+	left: -80rpx;
+	top: 110rpx;
+}
+
+.leaf-right {
+	right: -70rpx;
+	bottom: 80rpx;
 }
 
 .header {
-	background-color: #2C8A43;
-	padding: 40rpx;
-	color: #fff;
+	background: transparent;
+	padding: 36rpx 30rpx 8rpx;
+	color: #1f5e2f;
 }
 
 .title {
 	font-size: 36rpx;
 	font-weight: bold;
+	display: block;
+}
+
+.header-subtitle {
+	margin-top: 10rpx;
+	font-size: 24rpx;
+	color: #4f6f55;
+	display: block;
 }
 
 .content {
@@ -152,10 +195,12 @@ export default {
 }
 
 .section {
-	background: #fff;
-	border-radius: 20rpx;
+	background: rgba(255,255,255,0.86);
+	border-radius: 28rpx;
 	padding: 30rpx;
 	margin-bottom: 30rpx;
+	box-shadow: 0 12rpx 28rpx rgba(45,96,51,0.09);
+	border: 2rpx solid rgba(255,255,255,0.66);
 }
 
 .section-header {
@@ -207,10 +252,10 @@ export default {
 }
 
 .collapse-item {
-	background: #fff;
+	background: #fbfdfb;
 	border-radius: 16rpx;
 	overflow: hidden;
-	border: 2rpx solid #f0f0f0;
+	border: 2rpx solid #e7f0e7;
 }
 
 .collapse-header {
@@ -218,7 +263,7 @@ export default {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	background: #f8f8f8;
+	background: #f2f8f2;
 }
 
 .crop-name {

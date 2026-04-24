@@ -1,6 +1,11 @@
 <template>
 	<view class="container">
+	<view class="status-ambience"></view>
 	<view class="content">
+			<view class="hero">
+				<view class="hero-title">识别中心</view>
+				<text class="hero-subtitle">清爽专业 · 识别高效 · 安全可信</text>
+			</view>
 			<!-- 主要功能区 -->
 			<view class="main">
 				<!-- 用户信息卡片 -->
@@ -49,6 +54,7 @@
 								<image :src="getImageUrl(item.imagePath)" mode="aspectFill" class="history-image"></image>
 								<view class="history-info">
 									<text class="disease-name">{{item.diseaseName}}</text>
+									<text class="status-tag">已识别</text>
 									<text class="crop-name">作物：{{item.cropName}}</text>
 									<text class="confidence">置信度: {{item.confidence}}%</text>
 									<text class="time">{{item.createTime}}</text>
@@ -404,8 +410,18 @@ import config from '@/config.js'
 <style>
 .container {
 	min-height: 100vh;
-	background-color: #f5f5f5;
+	background: linear-gradient(180deg, #dceaf2 0%, #eef7f1 34%, #eaf3ea 100%);
 	padding-bottom: 100rpx; /* 为底部tabBar留出空间 */
+}
+
+.status-ambience {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 138rpx;
+	background: linear-gradient(90deg, rgba(53, 156, 74, 0.84), rgba(68, 170, 88, 0.65));
+	z-index: 0;
 }
 
 	.content {
@@ -417,17 +433,39 @@ import config from '@/config.js'
 
 .main {
 	flex: 1;
-	padding: 20rpx;  /* 减小整体内边距 */
+	padding: 24rpx;
 	display: flex;
 	flex-direction: column;
-	gap: 20rpx;  /* 减小卡片之间的间距 */
+	gap: 24rpx;
+}
+
+.hero {
+	margin: 24rpx;
+	padding: 28rpx;
+	border-radius: 26rpx;
+	background: linear-gradient(135deg, rgba(45, 151, 65, 0.2), rgba(255, 255, 255, 0.65));
+	border: 2rpx solid rgba(255, 255, 255, 0.7);
+}
+
+.hero-title {
+	font-size: 44rpx;
+	font-weight: 700;
+	color: #1f6a32;
+}
+
+.hero-subtitle {
+	margin-top: 12rpx;
+	font-size: 25rpx;
+	color: #4f6f55;
+	display: block;
 }
 
 .user-card {
-	background: #fff;
-	border-radius: 20rpx;
+	background: rgba(255, 255, 255, 0.86);
+	border-radius: 28rpx;
 	padding: 30rpx;
-	box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+	box-shadow: 0 12rpx 28rpx rgba(45,96,51,0.09);
+	border: 2rpx solid rgba(255,255,255,0.66);
 	margin-bottom: 20rpx;  /* 减小底部间距 */
 }
 
@@ -447,15 +485,16 @@ import config from '@/config.js'
 	font-size: 28rpx;
 	color: #fff;
 	padding: 10rpx 20rpx;
-	background: #2C8A43;
+	background: linear-gradient(135deg, #2C8A43, #3CA55C);
 	border-radius: 30rpx;
 }
 
 .function-card, .history-card {
-	background: #fff;
-	border-radius: 20rpx;
+	background: rgba(255, 255, 255, 0.86);
+	border-radius: 28rpx;
 	padding: 30rpx;
-	box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.05);
+	box-shadow: 0 12rpx 28rpx rgba(45,96,51,0.09);
+	border: 2rpx solid rgba(255,255,255,0.66);
 }
 
 .card-title {
@@ -463,6 +502,8 @@ import config from '@/config.js'
 	font-weight: bold;
 	color: #333;
 	margin-bottom: 30rpx;
+	padding-left: 16rpx;
+	border-left: 8rpx solid #2C8A43;
 }
 
 .upload-section {
@@ -472,13 +513,13 @@ import config from '@/config.js'
 .upload-box {
 	width: 100%;
 	height: 400rpx;
-	background: #f8f8f8;
+	background: #f7fbf7;
 	border-radius: 16rpx;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-	border: 2rpx dashed #ddd;
+	border: 2rpx dashed #b7d9bf;
 }
 
 .preview-image {
@@ -507,11 +548,24 @@ import config from '@/config.js'
 	width: 100%;
 	height: 88rpx;
 	line-height: 88rpx;
-	background: #2C8A43;
+	background: linear-gradient(135deg, #2C8A43, #3CA55C);
 	color: #fff;
 	font-size: 32rpx;
 	border-radius: 44rpx;
 	margin-top: 30rpx;
+	position: relative;
+	overflow: hidden;
+}
+
+.submit-btn::after {
+	content: '';
+	position: absolute;
+	right: -40rpx;
+	bottom: -50rpx;
+	width: 210rpx;
+	height: 140rpx;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(132,212,138,0.42), rgba(132,212,138,0) 72%);
 }
 
 .submit-btn[disabled] {
@@ -541,8 +595,8 @@ import config from '@/config.js'
 	display: flex;
 	align-items: center;
 	padding: 20rpx;
-	border-bottom: 2rpx solid #f5f5f5;
-	background: #fff;
+	border-bottom: 2rpx solid #edf4ee;
+	background: transparent;
 	/* 确保每个项目有固定高度 */
 	min-height: 120rpx;
 }
@@ -580,9 +634,20 @@ import config from '@/config.js'
 	display: block;
 }
 
+.status-tag {
+	display: inline-block;
+	padding: 4rpx 14rpx;
+	margin-bottom: 6rpx;
+	border-radius: 999rpx;
+	font-size: 20rpx;
+	color: #2e8f40;
+	background: rgba(70, 172, 90, 0.14);
+	border: 1rpx solid rgba(70, 172, 90, 0.35);
+}
+
 .confidence {
 	font-size: 24rpx;
-	color: #2C8A43;
+	color: #1f7a34;
 	margin-bottom: 6rpx;
 	display: block;
 }
@@ -695,11 +760,11 @@ import config from '@/config.js'
 }
 
 .status-warning {
-	color: #FFA500 !important;
+	color: #d98307 !important;
 }
 
 .status-danger {
-	color: #FF4444 !important;
+	color: #d64545 !important;
 }
 
 .loading-more, .no-more {

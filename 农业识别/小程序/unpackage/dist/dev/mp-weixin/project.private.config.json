@@ -1,6 +1,6 @@
 {
   "description": "项目私有配置文件。此文件中的内容将覆盖 project.config.json 中的相同字段。项目的改动优先同步到此文件中。详见文档：https://developers.weixin.qq.com/miniprogram/dev/devtools/projectconfig.html",
-  "projectname": "基于CNN图像分析的农作物病虫害智能识别与预警系统",
+  "projectname": "基于ResNet50的病虫害识别及防治预警系统",
   "setting": {
     "compileHotReLoad": true
   },
