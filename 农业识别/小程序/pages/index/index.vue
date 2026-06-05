@@ -1,783 +1,1076 @@
 <template>
-	<view class="container">
-	<view class="status-ambience"></view>
-	<view class="content">
-			<view class="hero">
-				<view class="hero-title">识别中心</view>
-				<text class="hero-subtitle">清爽专业 · 识别高效 · 安全可信</text>
-			</view>
-			<!-- 主要功能区 -->
-			<view class="main">
-				<!-- 用户信息卡片 -->
-				<view class="user-card">
-					<view class="user-info">
-						<text class="welcome">欢迎，{{userInfo.username}}</text>
-						<text class="logout" @tap="handleLogout">退出登录</text>
-					</view>
-				</view>
-				
-				<!-- 识别功能卡片 -->
-				<view class="function-card">
-					<view class="card-title">病虫害识别</view>
-					<view class="upload-section">
-						<view class="upload-box" @tap="chooseImage">
-							<image v-if="tempFilePath" :src="tempFilePath" mode="aspectFit" class="preview-image"></image>
-							<view v-else class="upload-placeholder">
-								<uni-icons type="camera-filled" size="40" color="#999"></uni-icons>
-								<text class="upload-text">点击上传图片</text>
-								<text class="upload-desc">支持jpg、png格式</text>
-							</view>
-						</view>
-					</view>
-					<button class="submit-btn" @tap="submitImage" :disabled="!tempFilePath">开始识别</button>
-				</view>
-				
-				<!-- 最近识别卡片 -->
-				<view class="history-card">
-					<view class="card-title">最近识别</view>
-					<scroll-view 
-						scroll-y 
-						class="history-list" 
-						@scrolltolower="loadMore"
-						:show-scrollbar="false"
-						:style="{ height: '600rpx' }"
-						:lower-threshold="50"
-					>
-						<view class="empty-tip" v-if="!historyList.length">暂无识别记录</view>
-						<view v-else>
-							<view 
-								class="history-item" 
-								v-for="(item, index) in historyList" 
-								:key="index" 
-								@tap="showHistoryDetail(item)"
-							>
-								<image :src="getImageUrl(item.imagePath)" mode="aspectFill" class="history-image"></image>
-								<view class="history-info">
-									<text class="disease-name">{{item.diseaseName}}</text>
-									<text class="status-tag">已识别</text>
-									<text class="crop-name">作物：{{item.cropName}}</text>
-									<text class="confidence">置信度: {{item.confidence}}%</text>
-									<text class="time">{{item.createTime}}</text>
-								</view>
-							</view>
-							<!-- 加载更多提示 -->
-							<view class="loading-more" v-if="isLoading">
-								<text>加载中...</text>
-							</view>
-							<view class="no-more" v-if="!hasMore && historyList.length">
-								<text>没有更多了</text>
-							</view>
-						</view>
-					</scroll-view>
-				</view>
-				
-				<!-- 识别结果弹窗 -->
-				<view class="popup-mask" v-if="showResultPopup" @tap="closePopup">
-					<view class="popup-content" @tap.stop>
-						<view class="popup-header">
-							<text class="popup-title">识别结果</text>
-							<text class="popup-close" @tap="closePopup">×</text>
-						</view>
-						
-						<view class="popup-body" v-if="recognitionResult">
-							<view class="result-item">
-								<text class="label">作物类型：</text>
-								<text class="value">{{recognitionResult.cropInfo.cropName}}</text>
-							</view>
-							
-							<view class="result-item">
-								<text class="label">识别结果：</text>
-								<text :class="['value', getDiseaseClass(recognitionResult.diseaseInfo.severityLevel)]">
-									{{recognitionResult.diseaseInfo.diseaseName}}
-								</text>
-							</view>
-							
-							<view class="result-item">
-								<text class="label">置信度：</text>
-								<text class="value">{{recognitionResult.diseaseInfo.confidence}}%</text>
-							</view>
-							
-							<view class="result-item">
-								<text class="label">严重程度：</text>
-								<text :class="['value', getDiseaseClass(recognitionResult.diseaseInfo.severityLevel)]">
-									{{recognitionResult.diseaseInfo.severityLevel}}
-								</text>
-							</view>
-							
-							<view class="divider"></view>
-							
-							<view class="solution-section">
-								<text class="solution-section-subtitle">症状描述</text>
-								<text class="solution-section-content">{{recognitionResult.solution.symptoms || '暂无数据'}}</text>
-								
-								<text class="solution-section-subtitle">解决方案</text>
-								<text class="solution-section-content">{{recognitionResult.solution.solutions || '暂无数据'}}</text>
-								
-								<text class="solution-section-subtitle">预防措施</text>
-								<text class="solution-section-content">{{recognitionResult.solution.preventionMethods || '暂无数据'}}</text>
-							</view>
-						</view>
-					</view>
-				</view>
-			</view>
-		</view>
-	</view>
+  <view class="index-page">
+    <view class="hero-section">
+      <image class="hero-bg" src="/static/ui/backgrounds/bg-index-hero.png" mode="aspectFill" />
+      <view class="hero-overlay"></view>
+      <view class="hero-blob hero-blob-left"></view>
+      <view class="hero-blob hero-blob-right"></view>
+      <image class="hero-decor hero-decor-tl" src="/static/ui/decor/leaf-corner-tl.png" mode="aspectFit" />
+      <image class="hero-decor hero-decor-br" src="/static/ui/decor/leaf-corner-br.png" mode="aspectFit" />
+
+      <view class="hero-content">
+        <view class="brand-chip">
+          <image class="brand-chip-icon" src="/static/ui/decor/leaf-mini-badge.png" mode="aspectFit" />
+          <text class="brand-chip-text">慧农之眼</text>
+        </view>
+        <view class="hero-title">识别中心</view>
+        <view class="hero-subtitle">上传叶片图片，快速完成病虫害识别</view>
+      </view>
+    </view>
+
+    <view class="content-wrap">
+      <view class="welcome-card card">
+        <view class="welcome-left">
+          <view class="avatar-badge">{{ userInitial }}</view>
+          <view class="welcome-meta">
+            <text class="welcome-title">{{ userInfo ? `欢迎回来，${userInfo.username}` : '欢迎使用慧农之眼' }}</text>
+            <view class="welcome-tags">
+              <text class="welcome-tag">智能识别</text>
+              <text class="welcome-tag">科学防治</text>
+            </view>
+          </view>
+        </view>
+        <view class="welcome-action" @tap="handleAuthAction">
+          <text>{{ userInfo ? '退出' : '登录' }}</text>
+        </view>
+      </view>
+
+      <view class="card section-card recognize-card">
+        <view class="section-head">
+          <view class="section-mark"></view>
+          <text class="section-title">病虫害识别</text>
+        </view>
+
+        <view class="upload-box" @tap="chooseImage">
+          <template v-if="selectedImage">
+            <image class="upload-preview" :src="selectedImage" mode="aspectFill" />
+            <view class="upload-mask">
+              <view class="upload-mask-btn">重新选择</view>
+            </view>
+          </template>
+          <template v-else>
+            <image class="upload-empty" src="/static/ui/empty/empty-upload.png" mode="aspectFit" />
+            <text class="upload-title">点击上传图片</text>
+            <text class="upload-desc">支持 JPG、PNG 格式，建议上传清晰叶片图像</text>
+          </template>
+        </view>
+
+        <button class="primary-btn" :loading="submitting" :disabled="submitting" @tap="handleRecognize">
+          <text class="primary-btn-text">{{ submitting ? '识别中...' : '开始识别' }}</text>
+        </button>
+      </view>
+
+      <view class="card section-card result-card" v-if="resultData && resultData.diseaseInfo">
+        <view class="section-head section-head-between">
+          <view class="section-head-left">
+            <view class="section-mark"></view>
+            <text class="section-title">识别结果</text>
+          </view>
+          <view class="severity-badge" :class="severityBadgeClass">
+            {{ normalizeSeverity(resultData.diseaseInfo && resultData.diseaseInfo.severityLevel) }}
+          </view>
+        </view>
+
+        <view class="result-summary">
+          <view class="summary-item">
+            <text class="summary-label">作物类型</text>
+            <text class="summary-value">{{ resultData.cropInfo && resultData.cropInfo.cropName || '未知' }}</text>
+          </view>
+          <view class="summary-item">
+            <text class="summary-label">病害名称</text>
+            <text class="summary-value highlight">{{ resultData.diseaseInfo && resultData.diseaseInfo.diseaseName || '未知' }}</text>
+          </view>
+          <view class="summary-item">
+            <text class="summary-label">识别置信度</text>
+            <text class="summary-value">{{ formatDisplayConfidence(resultData.diseaseInfo && resultData.diseaseInfo.confidence) }}</text>
+          </view>
+        </view>
+
+        <view class="result-panel" v-if="resultData.solution">
+          <view class="result-block" v-if="resultData.solution.symptoms">
+            <text class="result-block-title">症状特征</text>
+            <text class="result-block-text">{{ resultData.solution.symptoms }}</text>
+          </view>
+          <view class="result-block" v-if="resultData.solution.solutions">
+            <text class="result-block-title">防治建议</text>
+            <text class="result-block-text">{{ resultData.solution.solutions }}</text>
+          </view>
+          <view class="result-block" v-if="resultData.solution.preventionMethods">
+            <text class="result-block-title">预防措施</text>
+            <text class="result-block-text">{{ resultData.solution.preventionMethods }}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="card section-card recent-card">
+        <view class="section-head section-head-between">
+          <view class="section-head-left">
+            <view class="section-mark"></view>
+            <text class="section-title">最近识别</text>
+          </view>
+          <text class="section-link" @tap="refreshHistory">刷新</text>
+        </view>
+
+        <template v-if="!userInfo">
+          <view class="empty-box small-empty">
+            <image class="empty-image" src="/static/ui/empty/empty-history.png" mode="aspectFit" />
+            <text class="empty-title">登录后可查看识别历史</text>
+            <text class="empty-desc">系统会自动保存你的识别记录与结果摘要</text>
+          </view>
+        </template>
+
+        <template v-else-if="historyLoading">
+          <view class="loading-box">
+            <text class="loading-text">正在加载历史记录...</text>
+          </view>
+        </template>
+
+        <template v-else-if="recentRecords.length === 0">
+          <view class="empty-box small-empty">
+            <image class="empty-image" src="/static/ui/empty/empty-history.png" mode="aspectFit" />
+            <text class="empty-title">还没有识别记录</text>
+            <text class="empty-desc">完成一次图片识别后，记录会自动保存在这里</text>
+          </view>
+        </template>
+
+        <view class="record-list" v-else>
+          <view class="record-item" v-for="item in recentRecords" :key="item.recordId" @tap="openRecordDetail(item)">
+            <image class="record-thumb" :src="fullImageUrl(item.imagePath)" mode="aspectFill" />
+            <view class="record-body">
+              <view class="record-top">
+                <text class="record-name">{{ item.diseaseName || '未知病害' }}</text>
+                <text class="record-time">{{ item.createTime }}</text>
+              </view>
+              <view class="record-meta-row">
+                <text class="record-chip">{{ item.cropName || '未知作物' }}</text>
+                <text class="record-chip soft">{{ formatHistoryConfidence(item.confidence) }}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="detail-mask" v-if="detailVisible" @tap="closeDetail"></view>
+    <view class="detail-sheet" v-if="detailVisible">
+      <view class="detail-handle"></view>
+      <view class="detail-head">
+        <text class="detail-title">识别详情</text>
+        <text class="detail-close" @tap="closeDetail">关闭</text>
+      </view>
+      <scroll-view class="detail-scroll" scroll-y>
+        <view class="detail-card" v-if="detailData">
+          <image class="detail-image" :src="fullImageUrl(detailData.imagePath)" mode="aspectFill" />
+          <view class="detail-summary">
+            <view class="detail-row">
+              <text class="detail-label">作物</text>
+              <text class="detail-value">{{ detailData.cropInfo && detailData.cropInfo.cropName || '未知' }}</text>
+            </view>
+            <view class="detail-row">
+              <text class="detail-label">病害</text>
+              <text class="detail-value highlight">{{ detailData.diseaseInfo && detailData.diseaseInfo.diseaseName || '未知' }}</text>
+            </view>
+            <view class="detail-row">
+              <text class="detail-label">严重程度</text>
+              <text class="detail-value">{{ normalizeSeverity(detailData.diseaseInfo && detailData.diseaseInfo.severityLevel) }}</text>
+            </view>
+            <view class="detail-row">
+              <text class="detail-label">置信度</text>
+              <text class="detail-value">{{ formatDisplayConfidence(detailData.diseaseInfo && detailData.diseaseInfo.confidence) }}</text>
+            </view>
+          </view>
+          <view class="detail-block" v-if="detailData.solution && detailData.solution.symptoms">
+            <text class="detail-block-title">症状特征</text>
+            <text class="detail-block-text">{{ detailData.solution.symptoms }}</text>
+          </view>
+          <view class="detail-block" v-if="detailData.solution && detailData.solution.solutions">
+            <text class="detail-block-title">防治建议</text>
+            <text class="detail-block-text">{{ detailData.solution.solutions }}</text>
+          </view>
+          <view class="detail-block" v-if="detailData.solution && detailData.solution.preventionMethods">
+            <text class="detail-block-title">预防措施</text>
+            <text class="detail-block-text">{{ detailData.solution.preventionMethods }}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
 </template>
 
 <script>
 import config from '@/config.js'
 
-	export default {
-		data() {
-			return {
-			userInfo: {},
-			tempFilePath: '',
-			recognitionResult: null,
-			showResultPopup: false,
-			historyList: [],
-			currentPage: 1,
-			hasMore: true,
-			isLoading: false
-			}
-		},
-		onLoad() {
-		// 获取用户信息
-		const userInfo = uni.getStorageSync('userInfo')
-		if (!userInfo) {
-			uni.redirectTo({
-				url: '/pages/login/login'
-			})
-			return
-		}
-		this.userInfo = userInfo
-		
-		// 获取历史记录
-		this.getHistoryList()
-		},
-		methods: {
-		// 选择图片
-		chooseImage() {
-			uni.chooseImage({
-				count: 1,
-				sizeType: ['compressed'],
-				sourceType: ['album', 'camera'],
-				success: (res) => {
-					this.tempFilePath = res.tempFilePaths[0]
-				},
-				fail: (err) => {
-					uni.showToast({
-						title: '选择图片失败',
-						icon: 'none'
-					})
-				}
-			})
-		},
-		
-		// 提交图片进行识别
-		submitImage() {
-			if (!this.tempFilePath) return
-			
-			uni.showLoading({
-				title: '识别中...'
-			})
-			
-			uni.uploadFile({
-				url: config.baseUrl + '/api/predict',
-				filePath: this.tempFilePath,
-				name: 'file',
-				formData: {
-					user_id: this.userInfo.userId
-				},
-				success: (res) => {
-					const result = JSON.parse(res.data)
-					if (result.success && result.data) {
-						const data = result.data
-						if (data.diseaseInfo && data.diseaseInfo.severityLevel) {
-							this.recognitionResult = JSON.parse(JSON.stringify(data))
-							this.showResultPopup = true
-							
-							// 刷新历史记录（重置到第一页）
-							this.currentPage = 1
-							this.hasMore = true
-							this.getHistoryList(1)
-							
-							uni.showToast({
-								title: '识别成功',
-								icon: 'success'
-							})
-						} else {
-							uni.showToast({
-								title: '数据格式错误',
-								icon: 'none'
-							})
-						}
-					} else {
-						uni.showToast({
-							title: result.message || '识别失败',
-							icon: 'none'
-						})
-					}
-				},
-				fail: (err) => {
-					uni.showToast({
-						title: '上传失败',
-						icon: 'none'
-					})
-				},
-				complete: () => {
-					uni.hideLoading()
-				}
-			})
-		},
-		
-		// 获取严重程度文本
-		getSeverityText(level) {
-			// 直接访问值而不是响应式对象
-			const actualLevel = level && level.toString()
-			
-			const textMap = {
-				'healthy': '健康',
-				'general': '一般',
-				'serious': '严重'
-			}
-			
-			return textMap[actualLevel] || '未知'
-		},
-		
-		// 获取病害状态的样式类
-		getDiseaseClass(level) {
-			if (!level) return ''
-			
-			const classMap = {
-				'健康': 'status-healthy',
-				'一般': 'status-warning',
-				'严重': 'status-danger'
-			}
-			
-			return classMap[level] || ''
-		},
-		
-		// 添加关闭弹窗方法
-		closePopup() {
-			this.showResultPopup = false
-		},
-		
-		// 获取历史记录
-		getHistoryList(page = 1) {
-			if (!this.hasMore && page > 1) {
-				console.log('没有更多数据了')
-				return
-			}
-			if (this.isLoading) {
-				console.log('正在加载中...')
-				return
-			}
-			
-			console.log('开始加载第', page, '页数据')
-			this.isLoading = true
-			
-			// 添加loading提示
-			if (page > 1) {
-				uni.showLoading({
-					title: '加载中...'
-				})
-			}
+export default {
+  data() {
+    return {
+      userInfo: null,
+      selectedImage: '',
+      submitting: false,
+      historyLoading: false,
+      recentRecords: [],
+      resultData: {},
+      detailVisible: false,
+      detailData: null,
+      severityBadgeClass: ''
+    }
+  },
+  computed: {
+    userInitial() {
+      if (!this.userInfo || !this.userInfo.username) return '农'
+      return String(this.userInfo.username).slice(0, 1)
+    }
+  },
+  onShow() {
+    this.loadUserInfo()
+    this.refreshHistory()
+  },
+  methods: {
+    loadUserInfo() {
+      const userInfo = uni.getStorageSync('userInfo')
+      this.userInfo = userInfo && userInfo.userId ? userInfo : null
+    },
+    handleAuthAction() {
+      if (this.userInfo) {
+        uni.showModal({
+          title: '提示',
+          content: '确定退出当前账号吗？',
+          success: ({ confirm }) => {
+            if (!confirm) return
+            uni.removeStorageSync('userInfo')
+            this.userInfo = null
+            this.resultData = null
+            this.severityBadgeClass = ''
+            this.recentRecords = []
+            uni.showToast({ title: '已退出', icon: 'none' })
+          }
+        })
+        return
+      }
+      uni.navigateTo({ url: '/pages/login/login' })
+    },
+    chooseImage() {
+      uni.chooseImage({
+        count: 1,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera'],
+        success: ({ tempFilePaths }) => {
+          if (!tempFilePaths || !tempFilePaths.length) return
+          this.selectedImage = tempFilePaths[0]
+        }
+      })
+    },
+    async handleRecognize() {
+      if (!this.selectedImage) {
+        this.toast('请先选择图片')
+        return
+      }
 
-			uni.request({
-				url: config.baseUrl + '/api/history',
-				method: 'GET',
-				data: {
-					user_id: this.userInfo.userId,
-					page: page,
-					page_size: 5
-				},
-				success: (res) => {
-					console.log('获取数据成功:', res.data)
-					if (res.data.success) {
-						const newRecords = res.data.records.map(record => ({
-							...record,
-							confidence: Math.round(record.confidence * 100),
-							imagePath: record.imagePath.trim(),
-							createTime: record.createTime.replace('T', ' ').split('.')[0]
-						}))
-						
-						if (page === 1) {
-							this.historyList = newRecords
-						} else {
-							this.historyList = [...this.historyList, ...newRecords]
-						}
-						
-						this.hasMore = res.data.hasMore
-						this.currentPage = page
-						
-						console.log('当前页数:', this.currentPage)
-						console.log('是否还有更多:', this.hasMore)
-						console.log('当前列表长度:', this.historyList.length)
-					}
-				},
-				fail: (err) => {
-					console.error('请求失败:', err)
-					uni.showToast({
-						title: '获取历史记录失败',
-						icon: 'none'
-					})
-				},
-				complete: () => {
-					this.isLoading = false
-					if (page > 1) {
-						uni.hideLoading()
-					}
-				}
-			})
-		},
-		
-		// 添加加载更多方法
-		loadMore() {
-			console.log('触发加载更多')
-			// 添加延时，避免频繁触发
-			if (this.hasMore && !this.isLoading) {
-				setTimeout(() => {
-					console.log('开始加载第', this.currentPage + 1, '页')
-					this.getHistoryList(this.currentPage + 1)
-				}, 100)
-			}
-		},
-		
-		// 显示历史记录详情
-		showHistoryDetail(item) {
-			// 添加调试日志
-			console.log('查看记录详情:', item)
-			
-			uni.request({
-				url: config.baseUrl + '/api/record/detail',
-				method: 'GET',
-				data: {
-					record_id: item.recordId
-				},
-				success: (res) => {
-					console.log('详情返回数据:', res.data)
-					if (res.data.success) {
-						this.recognitionResult = res.data.data
-						this.showResultPopup = true
-					} else {
-						uni.showToast({
-							title: '获取详情失败',
-							icon: 'none'
-						})
-					}
-				},
-				fail: (err) => {
-					console.error('请求失败:', err)
-					uni.showToast({
-						title: '获取详情失败',
-						icon: 'none'
-					})
-				}
-			})
-		},
-		
-		// 获取图片URL
-		getImageUrl(path) {
-			if (!path) return ''
-			// 添加调试日志
-			console.log('原始路径:', path)
-			const url = config.baseUrl + '/' + path.replace(/^\/+/, '')
-			console.log('完整URL:', url)
-			return url
-		},
-		
-		// 添加退出登录方法
-		handleLogout() {
-			uni.showModal({
-				title: '提示',
-				content: '确定要退出登录吗？',
-				success: (res) => {
-					if (res.confirm) {
-						// 清除本地存储的用户信息
-						uni.removeStorageSync('userInfo')
-						// 跳转到登录页
-						uni.reLaunch({
-							url: '/pages/login/login'
-						})
-					}
-				}
-			})
-		}
-		}
-	}
+      if (this.submitting) return
+      this.submitting = true
+
+      try {
+        const uploadRes = await this.uploadImage()
+        const payload = typeof uploadRes.data === 'string' ? JSON.parse(uploadRes.data) : uploadRes.data
+        if (!payload || !payload.success) {
+          throw new Error((payload && payload.message) || '识别失败')
+        }
+        this.resultData = payload.data
+        this.severityBadgeClass = this.severityClass(payload.data.diseaseInfo && payload.data.diseaseInfo.severityLevel)
+        uni.showToast({ title: '识别成功', icon: 'success' })
+        this.loadDiseaseDetail(payload.data.diseaseInfo && payload.data.diseaseInfo.diseaseName)
+        this.refreshHistory()
+      } catch (error) {
+        console.error('recognize error:', error)
+        this.toast(error.message || '识别失败，请稍后重试')
+      } finally {
+        this.submitting = false
+      }
+    },
+    uploadImage() {
+      return new Promise((resolve, reject) => {
+        uni.uploadFile({
+          url: config.baseUrl + '/api/predict',
+          filePath: this.selectedImage,
+          name: 'file',
+          formData: this.userInfo ? { user_id: this.userInfo.userId } : {},
+          success: resolve,
+          fail: reject
+        })
+      })
+    },
+    async loadDiseaseDetail(diseaseName) {
+      if (!diseaseName || diseaseName === '未知' || diseaseName === '健康') {
+        this.resultData.solution = null
+        return
+      }
+
+      try {
+        const response = await uni.request({
+          url: config.baseUrl + '/api/diseases',
+          method: 'GET'
+        })
+        const { statusCode, data } = response
+        if (statusCode === 200 && data && data.success && data.diseases) {
+          const disease = data.diseases.find(d => d.name === diseaseName)
+          if (disease) {
+            this.resultData.solution = {
+              symptoms: disease.description || disease.symptoms || '',
+              solutions: disease.solutions || '',
+              preventionMethods: disease.preventionMethods || ''
+            }
+          } else {
+            this.resultData.solution = null
+          }
+        }
+      } catch (error) {
+        console.error('load disease detail error:', error)
+        this.resultData.solution = null
+      }
+    },
+    async refreshHistory() {
+      if (!this.userInfo || !this.userInfo.userId) {
+        this.recentRecords = []
+        return
+      }
+
+      this.historyLoading = true
+      try {
+        const response = await uni.request({
+          url: config.baseUrl + '/api/history',
+          method: 'GET',
+          data: {
+            user_id: this.userInfo.userId,
+            page: 1,
+            page_size: 5
+          }
+        })
+        const { statusCode, data } = response
+        if (statusCode === 200 && data && data.success) {
+          this.recentRecords = data.records || []
+          return
+        }
+        this.recentRecords = []
+      } catch (error) {
+        console.error('history error:', error)
+        this.recentRecords = []
+      } finally {
+        this.historyLoading = false
+      }
+    },
+    async openRecordDetail(item) {
+      try {
+        const response = await uni.request({
+          url: config.baseUrl + '/api/record/detail',
+          method: 'GET',
+          data: { record_id: item.recordId }
+        })
+        const { statusCode, data } = response
+        if (statusCode === 200 && data && data.success) {
+          this.detailData = data.data
+          this.detailVisible = true
+          return
+        }
+      } catch (error) {
+        console.error('detail error:', error)
+      }
+    },
+    closeDetail() {
+      this.detailVisible = false
+    },
+    normalizeSeverity(level) {
+      if (!level) return '未知'
+      if (level === 'healthy') return '健康'
+      if (level === 'general') return '一般'
+      if (level === 'serious') return '严重'
+      return level
+    },
+    severityClass(level) {
+      const value = this.normalizeSeverity(level)
+      if (value === '严重') return 'danger'
+      if (value === '一般') return 'warning'
+      if (value === '健康') return 'success'
+      return ''
+    },
+    formatDisplayConfidence(value) {
+      if (value === undefined || value === null || value === '') return '--'
+      const num = Number(value)
+      if (Number.isNaN(num)) return '--'
+      return `${num.toFixed(2)}%`
+    },
+    formatHistoryConfidence(value) {
+      if (value === undefined || value === null || value === '') return '--'
+      const num = Number(value)
+      if (Number.isNaN(num)) return '--'
+      const percent = num <= 1 ? num * 100 : num
+      return `置信度 ${percent.toFixed(1)}%`
+    },
+    fullImageUrl(path) {
+      if (!path) return '/static/ui/empty/empty-upload.png'
+      if (/^https?:\/\//.test(path)) return path
+      if (path.startsWith('/')) return config.baseUrl + path
+      return `${config.baseUrl}/${path}`
+    },
+    toast(title) {
+      uni.showToast({ title, icon: 'none' })
+    }
+  }
+}
 </script>
 
 <style>
-.container {
-	min-height: 100vh;
-	background: linear-gradient(180deg, #dceaf2 0%, #eef7f1 34%, #eaf3ea 100%);
-	padding-bottom: 100rpx; /* 为底部tabBar留出空间 */
+page {
+  min-height: 100%;
+  background: linear-gradient(180deg, #edf7ed 0%, #f7fbf6 40%, #f4faf4 100%);
 }
 
-.status-ambience {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 138rpx;
-	background: linear-gradient(90deg, rgba(53, 156, 74, 0.84), rgba(68, 170, 88, 0.65));
-	z-index: 0;
+.index-page {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #edf7ed 0%, #f7fbf6 40%, #f4faf4 100%);
 }
 
-	.content {
-	/* 移除 padding-top */
-	min-height: 100vh;
-	display: flex;
-	flex-direction: column;
+.hero-section {
+  position: relative;
+  height: 420rpx;
+  overflow: hidden;
+  border-bottom-left-radius: 56rpx;
+  border-bottom-right-radius: 56rpx;
 }
 
-.main {
-	flex: 1;
-	padding: 24rpx;
-	display: flex;
-	flex-direction: column;
-	gap: 24rpx;
+.hero-bg,
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.hero {
-	margin: 24rpx;
-	padding: 28rpx;
-	border-radius: 26rpx;
-	background: linear-gradient(135deg, rgba(45, 151, 65, 0.2), rgba(255, 255, 255, 0.65));
-	border: 2rpx solid rgba(255, 255, 255, 0.7);
+.hero-overlay {
+  background: linear-gradient(180deg, rgba(47, 139, 72, 0.22) 0%, rgba(73, 183, 95, 0.34) 48%, rgba(101, 204, 126, 0.62) 100%);
+}
+
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 2;
+  filter: blur(8rpx);
+}
+
+.hero-blob-left {
+  width: 180rpx;
+  height: 180rpx;
+  left: -50rpx;
+  top: 90rpx;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.08) 58%, rgba(255, 255, 255, 0) 100%);
+}
+
+.hero-blob-right {
+  width: 220rpx;
+  height: 220rpx;
+  right: -40rpx;
+  top: 70rpx;
+  background: radial-gradient(circle, rgba(214, 255, 222, 0.28) 0%, rgba(214, 255, 222, 0.08) 60%, rgba(214, 255, 222, 0) 100%);
+}
+
+.hero-decor {
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-decor-tl {
+  width: 520rpx;
+  height: 520rpx;
+  left: -8rpx;
+  top: -6rpx;
+  opacity: 0.82;
+}
+
+.hero-decor-br {
+  width: 520rpx;
+  height: 520rpx;
+  right: -24rpx;
+  bottom: -22rpx;
+  opacity: 0.55;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  padding: 72rpx 40rpx 0;
+  color: #ffffff;
+}
+
+.brand-chip {
+  height: 56rpx;
+  padding: 0 20rpx 0 12rpx;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8rpx 20rpx rgba(34, 91, 45, 0.10);
+}
+
+.brand-chip-icon {
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 10rpx;
+}
+
+.brand-chip-text {
+  font-size: 24rpx;
 }
 
 .hero-title {
-	font-size: 44rpx;
-	font-weight: 700;
-	color: #1f6a32;
+  color:#DD5710;
+  margin-top: 28rpx;
+  font-size: 62rpx;
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  text-shadow: 0 8rpx 18rpx rgba(29, 85, 40, 0.16);
 }
 
 .hero-subtitle {
-	margin-top: 12rpx;
-	font-size: 25rpx;
-	color: #4f6f55;
-	display: block;
+  color:#F5AB58;
+  margin-top: 18rpx;
+  width: 560rpx;
+  max-width: 100%;
+  font-size: 28rpx;
+  font-weight: bold;
+  line-height: 1.6;
 }
 
-.user-card {
-	background: rgba(255, 255, 255, 0.86);
-	border-radius: 28rpx;
-	padding: 30rpx;
-	box-shadow: 0 12rpx 28rpx rgba(45,96,51,0.09);
-	border: 2rpx solid rgba(255,255,255,0.66);
-	margin-bottom: 20rpx;  /* 减小底部间距 */
+.content-wrap {
+  position: relative;
+  z-index: 5;
+  margin-top: -74rpx;
+  padding: 0 24rpx 42rpx;
 }
 
-.user-info {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+.card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 32rpx;
+  box-shadow: 0 20rpx 54rpx rgba(31, 101, 46, 0.10);
+  border: 2rpx solid rgba(255, 255, 255, 0.7);
 }
 
-.welcome {
-	font-size: 32rpx;
-	font-weight: 500;
-	color: #333;
+.welcome-card {
+  padding: 26rpx 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.logout {
-	font-size: 28rpx;
-	color: #fff;
-	padding: 10rpx 20rpx;
-	background: linear-gradient(135deg, #2C8A43, #3CA55C);
-	border-radius: 30rpx;
+.welcome-left {
+  display: flex;
+  align-items: center;
+  min-width: 0;
 }
 
-.function-card, .history-card {
-	background: rgba(255, 255, 255, 0.86);
-	border-radius: 28rpx;
-	padding: 30rpx;
-	box-shadow: 0 12rpx 28rpx rgba(45,96,51,0.09);
-	border: 2rpx solid rgba(255,255,255,0.66);
+.avatar-badge {
+  width: 94rpx;
+  height: 94rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2ea14d 0%, #48bf63 100%);
+  color: #ffffff;
+  font-size: 40rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10rpx 26rpx rgba(57, 169, 75, 0.24);
 }
 
-.card-title {
-	font-size: 32rpx;
-	font-weight: bold;
-	color: #333;
-	margin-bottom: 30rpx;
-	padding-left: 16rpx;
-	border-left: 8rpx solid #2C8A43;
+.welcome-meta {
+  margin-left: 20rpx;
+  min-width: 0;
 }
 
-.upload-section {
-	padding: 20rpx 0;
+.welcome-title {
+  display: block;
+  font-size: 38rpx;
+  font-weight: 700;
+  color: #243126;
+  line-height: 1.3;
+}
+
+.welcome-tags {
+  margin-top: 10rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.welcome-tag {
+  padding: 6rpx 18rpx;
+  border-radius: 999rpx;
+  background: #edf8ef;
+  color: #39a94b;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.welcome-action {
+  min-width: 94rpx;
+  height: 54rpx;
+  padding: 0 18rpx;
+  border-radius: 999rpx;
+  background: #fff2f2;
+  color: #e16a6a;
+  font-size: 26rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section-card {
+  margin-top: 24rpx;
+  padding: 28rpx;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+}
+
+.section-head-between {
+  justify-content: space-between;
+}
+
+.section-head-left {
+  display: flex;
+  align-items: center;
+}
+
+.section-mark {
+  width: 18rpx;
+  height: 36rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(180deg, #39a94b 0%, #72cf7b 100%);
+  margin-right: 16rpx;
+}
+
+.section-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #243126;
+}
+
+.section-link {
+  font-size: 24rpx;
+  color: #39a94b;
+  font-weight: 600;
 }
 
 .upload-box {
-	width: 100%;
-	height: 400rpx;
-	background: #f7fbf7;
-	border-radius: 16rpx;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-	border: 2rpx dashed #b7d9bf;
+  margin-top: 24rpx;
+  position: relative;
+  height: 360rpx;
+  border-radius: 28rpx;
+  border: 2rpx dashed #cfe3d0;
+  background: linear-gradient(180deg, #f8fcf8 0%, #f3faf3 100%);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.preview-image {
-	width: 100%;
-	height: 100%;
-	border-radius: 16rpx;
+.upload-empty {
+  width: 210rpx;
+  height: 160rpx;
+  opacity: 0.95;
 }
 
-.upload-placeholder {
-	text-align: center;
-}
-
-.upload-text {
-	font-size: 32rpx;
-	color: #666;
-	margin-bottom: 10rpx;
-	display: block;
+.upload-title {
+  margin-top: 16rpx;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #445448;
 }
 
 .upload-desc {
-	font-size: 24rpx;
-	color: #999;
+  margin-top: 12rpx;
+  width: 520rpx;
+  max-width: 100%;
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: #8c9b8f;
+  text-align: center;
 }
 
-.submit-btn {
-	width: 100%;
-	height: 88rpx;
-	line-height: 88rpx;
-	background: linear-gradient(135deg, #2C8A43, #3CA55C);
-	color: #fff;
-	font-size: 32rpx;
-	border-radius: 44rpx;
-	margin-top: 30rpx;
-	position: relative;
-	overflow: hidden;
+.upload-preview,
+.upload-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.submit-btn::after {
-	content: '';
-	position: absolute;
-	right: -40rpx;
-	bottom: -50rpx;
-	width: 210rpx;
-	height: 140rpx;
-	border-radius: 50%;
-	background: radial-gradient(circle, rgba(132,212,138,0.42), rgba(132,212,138,0) 72%);
+.upload-mask {
+  background: linear-gradient(180deg, rgba(36, 49, 38, 0.05) 0%, rgba(36, 49, 38, 0.22) 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 28rpx;
 }
 
-.submit-btn[disabled] {
-	background: #ccc;
-	color: #fff;
+.upload-mask-btn {
+  min-width: 176rpx;
+  height: 58rpx;
+  padding: 0 24rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.9);
+  color: #2e7d32;
+  font-size: 24rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.history-card {
-	margin: 0;
-	height: auto;
-	min-height: 400rpx;
-	display: flex;
-	flex-direction: column;
-	/* 添加固定高度 */
-	height: 700rpx;
+.primary-btn {
+  margin-top: 24rpx;
+  width: 100%;
+  height: 94rpx;
+  line-height: 94rpx;
+  border-radius: 999rpx;
+  border: none;
+  background: linear-gradient(90deg, #31b35d 0%, #2ea14d 52%, #42bb65 100%);
+  box-shadow: 0 16rpx 32rpx rgba(57, 169, 75, 0.24);
 }
 
-.history-list {
-	flex: 1;
-	/* 确保高度正确 */
-	height: 600rpx !important;
-	overflow-y: scroll;
-	-webkit-overflow-scrolling: touch;
+.primary-btn::after {
+  border: none;
 }
 
-.history-item {
-	display: flex;
-	align-items: center;
-	padding: 20rpx;
-	border-bottom: 2rpx solid #edf4ee;
-	background: transparent;
-	/* 确保每个项目有固定高度 */
-	min-height: 120rpx;
+.primary-btn-text {
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
 }
 
-.history-item:last-child {
-	border-bottom: none;
+.result-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(245,250,245,0.97) 100%);
 }
 
-.history-image {
-	width: 120rpx;
-	height: 120rpx;
-	border-radius: 12rpx;
-	margin-right: 20rpx;
-	object-fit: cover;
-	flex-shrink: 0;
+.severity-badge {
+  padding: 10rpx 18rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #5d6e60;
+  background: #eef3ef;
 }
 
-.history-info {
-	flex: 1;
-	overflow: hidden;
+.severity-badge.success {
+  color: #2e7d32;
+  background: #edf8ef;
 }
 
-.disease-name {
-	font-size: 28rpx;
-	color: #333;
-	margin-bottom: 6rpx;
-	display: block;
-	font-weight: 500;
+.severity-badge.warning {
+  color: #d5911c;
+  background: #fff7e8;
 }
 
-.crop-name {
-	font-size: 24rpx;
-	color: #666;
-	margin-bottom: 6rpx;
-	display: block;
+.severity-badge.danger {
+  color: #d95d5d;
+  background: #fff1f1;
 }
 
-.status-tag {
-	display: inline-block;
-	padding: 4rpx 14rpx;
-	margin-bottom: 6rpx;
-	border-radius: 999rpx;
-	font-size: 20rpx;
-	color: #2e8f40;
-	background: rgba(70, 172, 90, 0.14);
-	border: 1rpx solid rgba(70, 172, 90, 0.35);
+.result-summary {
+  margin-top: 22rpx;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18rpx;
 }
 
-.confidence {
-	font-size: 24rpx;
-	color: #1f7a34;
-	margin-bottom: 6rpx;
-	display: block;
+.summary-item {
+  padding: 22rpx 20rpx;
+  border-radius: 24rpx;
+  background: #f7faf7;
+  border: 2rpx solid #edf2ed;
 }
 
-.time {
-	font-size: 24rpx;
-	color: #999;
-	display: block;
+.summary-item:last-child {
+  grid-column: 1 / -1;
 }
 
-.empty-tip {
-	text-align: center;
-	color: #999;
-	font-size: 28rpx;
-	padding: 40rpx 0;
+.summary-label {
+  display: block;
+  font-size: 22rpx;
+  color: #8da08f;
 }
 
-.popup-mask {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: rgba(0,0,0,0.6);
-	z-index: 999;
-		display: flex;
-	align-items: center;
-		justify-content: center;
-	}
-
-.popup-content {
-	width: 90%;
-	max-height: 90vh;
-	background: #fff;
-	border-radius: 20rpx;
-	overflow: hidden;
+.summary-value {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #243126;
+  line-height: 1.4;
 }
 
-.popup-header {
-	padding: 30rpx;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	border-bottom: 2rpx solid #f5f5f5;
+.summary-value.highlight {
+  color: #2e7d32;
 }
 
-.popup-title {
-	font-size: 32rpx;
-	font-weight: bold;
-	color: #333;
+.result-panel {
+  margin-top: 20rpx;
 }
 
-.popup-close {
-	font-size: 40rpx;
-	color: #999;
-	padding: 0 20rpx;
+.result-block {
+  margin-top: 18rpx;
+  padding: 24rpx;
+  border-radius: 24rpx;
+  background: #f8fbf8;
+  border: 2rpx solid #edf2ed;
 }
 
-.popup-body {
-	padding: 30rpx;
-	max-height: calc(90vh - 100rpx);
-	overflow-y: auto;
+.result-block-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #243126;
 }
 
-.result-item {
-	display: flex;
-	margin-bottom: 20rpx;
+.result-block-text {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 25rpx;
+  line-height: 1.8;
+  color: #5f6f63;
 }
 
-.label {
-	color: #666;
-	width: 160rpx;
+.loading-box,
+.empty-box {
+  padding: 34rpx 12rpx 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.value {
-	color: #333;
-	flex: 1;
-	font-weight: 500;
+.small-empty {
+  padding-top: 22rpx;
 }
 
-.divider {
-	height: 2rpx;
-	background: #f5f5f5;
-	margin: 30rpx 0;
+.loading-text,
+.empty-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #516154;
 }
 
-/* 完全展开的样式，移除嵌套 */
-.solution-section {
-	padding: 20rpx 0;
+.empty-image {
+  width: 220rpx;
+  height: 150rpx;
+  opacity: 0.96;
 }
 
-.solution-section-subtitle {
-	font-size: 28rpx;
-	font-weight: bold;
-	color: #333;
-	margin: 20rpx 0;
-	display: block;
+.empty-title {
+  margin-top: 14rpx;
 }
 
-.solution-section-content {
-	font-size: 26rpx;
-	color: #666;
-	line-height: 1.6;
-	margin-bottom: 30rpx;
-	display: block;
+.empty-desc {
+  margin-top: 10rpx;
+  width: 500rpx;
+  max-width: 100%;
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: #90a090;
+  text-align: center;
 }
 
-.status-healthy {
-	color: #2C8A43 !important;
+.record-list {
+  margin-top: 12rpx;
 }
 
-.status-warning {
-	color: #d98307 !important;
+.record-item {
+  display: flex;
+  align-items: center;
+  padding: 18rpx 0;
+  border-bottom: 2rpx solid #eff4ef;
 }
 
-.status-danger {
-	color: #d64545 !important;
+.record-item:last-child {
+  border-bottom: none;
 }
 
-.loading-more, .no-more {
-	text-align: center;
-	padding: 20rpx 0;
-	color: #999;
-	font-size: 24rpx;
+.record-thumb {
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 22rpx;
+  background: #f1f6f1;
+  flex-shrink: 0;
 }
 
-/* 添加滚动条样式 */
-::-webkit-scrollbar {
-	width: 0;
-	height: 0;
-	color: transparent;
-	}
+.record-body {
+  flex: 1;
+  min-width: 0;
+  margin-left: 18rpx;
+}
+
+.record-top {
+  display: flex;
+  flex-direction: column;
+}
+
+.record-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #243126;
+  line-height: 1.5;
+}
+
+.record-time {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #95a595;
+}
+
+.record-meta-row {
+  margin-top: 12rpx;
+  display: flex;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.record-chip {
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  background: #edf8ef;
+  color: #2e7d32;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.record-chip.soft {
+  background: #f2f5f2;
+  color: #708072;
+}
+
+.detail-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(22, 32, 24, 0.32);
+  z-index: 30;
+}
+
+.detail-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 31;
+  height: 78vh;
+  background: #ffffff;
+  border-top-left-radius: 34rpx;
+  border-top-right-radius: 34rpx;
+  box-shadow: 0 -16rpx 48rpx rgba(31, 101, 46, 0.12);
+  overflow: hidden;
+}
+
+.detail-handle {
+  width: 92rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background: #dbe6dc;
+  margin: 18rpx auto 0;
+}
+
+.detail-head {
+  padding: 22rpx 28rpx 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.detail-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #243126;
+}
+
+.detail-close {
+  font-size: 24rpx;
+  color: #39a94b;
+  font-weight: 600;
+}
+
+.detail-scroll {
+  height: calc(78vh - 90rpx);
+}
+
+.detail-card {
+  padding: 0 28rpx 40rpx;
+}
+
+.detail-image {
+  width: 100%;
+  height: 320rpx;
+  border-radius: 28rpx;
+  background: #f1f6f1;
+}
+
+.detail-summary {
+  margin-top: 20rpx;
+  padding: 20rpx 22rpx;
+  border-radius: 24rpx;
+  background: #f8fbf8;
+  border: 2rpx solid #edf2ed;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 0;
+  gap: 18rpx;
+}
+
+.detail-label {
+  font-size: 24rpx;
+  color: #8ca08e;
+}
+
+.detail-value {
+  flex: 1;
+  text-align: right;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #243126;
+}
+
+.detail-value.highlight {
+  color: #2e7d32;
+}
+
+.detail-block {
+  margin-top: 18rpx;
+  padding: 24rpx;
+  border-radius: 24rpx;
+  background: #f8fbf8;
+  border: 2rpx solid #edf2ed;
+}
+
+.detail-block-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #243126;
+}
+
+.detail-block-text {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 25rpx;
+  line-height: 1.8;
+  color: #5f6f63;
+}
 </style>

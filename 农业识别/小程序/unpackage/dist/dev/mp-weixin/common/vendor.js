@@ -9558,9 +9558,9 @@ internalMixin(Vue);
 
 /***/ }),
 /* 26 */
-/*!**********************************************************************!*\
-  !*** C:/Users/93368/Desktop/软著/基于ResNet50的病虫害识别及防治预警系统/pages.json ***!
-  \**********************************************************************/
+/*!**************************************************************!*\
+  !*** D:/1_code_study/projects/2026jsjds/农业识别/小程序/pages.json ***!
+  \**************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -9704,9 +9704,9 @@ function normalizeComponent (
 
 /***/ }),
 /* 33 */
-/*!************************************************************************************!*\
-  !*** C:/Users/93368/Desktop/软著/基于ResNet50的病虫害识别及防治预警系统/uni.promisify.adaptor.js ***!
-  \************************************************************************************/
+/*!****************************************************************************!*\
+  !*** D:/1_code_study/projects/2026jsjds/农业识别/小程序/uni.promisify.adaptor.js ***!
+  \****************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -9734,43 +9734,6 @@ uni.addInterceptor({
 /* 38 */,
 /* 39 */,
 /* 40 */
-/*!*********************************************************************!*\
-  !*** C:/Users/93368/Desktop/软著/基于ResNet50的病虫害识别及防治预警系统/config.js ***!
-  \*********************************************************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var _default = {
-  baseUrl: 'http://10.150.239.22:5000' // 修改为Flask后端运行的地址
-  // 其他配置...
-};
-exports.default = _default;
-
-/***/ }),
-/* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */,
-/* 47 */,
-/* 48 */,
-/* 49 */,
-/* 50 */,
-/* 51 */,
-/* 52 */,
-/* 53 */,
-/* 54 */,
-/* 55 */,
-/* 56 */,
-/* 57 */
 /*!************************************************************************************************!*\
   !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/@babel/runtime/regenerator/index.js ***!
   \************************************************************************************************/
@@ -9779,11 +9742,11 @@ exports.default = _default;
 
 // TODO(Babel 8): Remove this file.
 
-var runtime = __webpack_require__(/*! @babel/runtime/helpers/regeneratorRuntime */ 58)();
+var runtime = __webpack_require__(/*! @babel/runtime/helpers/regeneratorRuntime */ 41)();
 module.exports = runtime;
 
 /***/ }),
-/* 58 */
+/* 41 */
 /*!*******************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/regeneratorRuntime.js ***!
   \*******************************************************************/
@@ -10104,7 +10067,7 @@ function _regeneratorRuntime() {
 module.exports = _regeneratorRuntime, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
 /***/ }),
-/* 59 */
+/* 42 */
 /*!*****************************************************************!*\
   !*** ./node_modules/@babel/runtime/helpers/asyncToGenerator.js ***!
   \*****************************************************************/
@@ -10142,6 +10105,27 @@ function _asyncToGenerator(fn) {
   };
 }
 module.exports = _asyncToGenerator, module.exports.__esModule = true, module.exports["default"] = module.exports;
+
+/***/ }),
+/* 43 */
+/*!*************************************************************!*\
+  !*** D:/1_code_study/projects/2026jsjds/农业识别/小程序/config.js ***!
+  \*************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _default = {
+  baseUrl: 'http://10.150.238.78:5000' // 修改为Flask后端运行的地址
+  // 其他配置...
+};
+exports.default = _default;
 
 /***/ })
 ]]);

@@ -1,1153 +1,1381 @@
 <template>
-	<view class="container">
-		<view class="status-ambience"></view>
-		<view class="hero">
-			<text class="hero-title">农业社区</text>
-			<text class="hero-subtitle">交流经验 · 共享识别案例</text>
-		</view>
-		<!-- 发布按钮 -->
-		<view class="publish-btn" @tap="showPublishPopup">
-			<text class="plus-icon">+</text>
-		</view>
-		
-		<!-- 帖子列表 -->
-		<scroll-view 
-			scroll-y 
-			class="post-list" 
-			@scrolltolower="loadMore"
-			refresher-enabled
-			:refresher-triggered="isRefreshing"
-			@refresherrefresh="onRefresh"
-		>
-			<view class="post-item" v-for="(post, index) in posts" :key="post.post_id">
-				<!-- 用户信息栏 -->
-				<view class="post-header">
-					<view class="user-info">
-						<view class="avatar">{{post.username[0]}}</view>
-							<view class="user-meta">
-								<text class="username">{{post.username}}</text>
-								<text class="status-tag">交流中</text>
-								<text class="time">{{post.create_time}}</text>
-							</view>
-					</view>
-					<view class="more-btn">
-						<uni-icons type="more-filled" size="20" color="#999"></uni-icons>
-					</view>
-				</view>
-				
-				<!-- 帖子内容 -->
-				<view class="post-content">
-					<text class="content-text" :class="{'content-expanded': post.isExpanded}" @tap="toggleContent(post)">
-						{{post.content}}
-					</text>
-					<text class="expand-btn" v-if="post.content.length > 100 && !post.isExpanded" @tap="toggleContent(post)">
-						展开
-					</text>
-					
-					<!-- 图片网格优化 -->
-					<view class="image-grid" v-if="post.images && post.images.length">
-						<view 
-							class="image-item" 
-							v-for="(image, imgIndex) in post.images" 
-							:key="imgIndex"
-							@tap="previewImage(post.images, imgIndex)"
-						>
-							<image :src="getImageUrl(image)" mode="aspectFill"></image>
-						</view>
-					</view>
-				</view>
-				
-				<!-- 互动栏优化 -->
-				<view class="post-footer">
-					<view class="action-btn like-btn" :class="{'liked': post.is_liked}" @tap.stop="toggleLike(post)">
-						<view class="action-icon">
-							<uni-icons 
-								:type="post.is_liked ? 'heart-filled' : 'heart'" 
-								size="22" 
-								:color="post.is_liked ? '#ff4444' : '#666'"
-								:class="{'heart-beat': post.isLiking}"
-							></uni-icons>
-							<text class="count-text" :class="{'liked': post.is_liked}">
-								{{post.like_count || '点赞'}}
-							</text>
-						</view>
-					</view>
-				</view>
+  <view class="discuss-page">
+    <view class="hero-section">
+      <image class="hero-bg" src="/static/ui/backgrounds/bg-discuss-hero.png" mode="aspectFill" />
+      <view class="hero-overlay"></view>
+      <view class="hero-blob hero-blob-left"></view>
+      <view class="hero-blob hero-blob-right"></view>
+      <image class="hero-decor hero-decor-tl" src="/static/ui/decor/leaf-corner-tl.png" mode="aspectFit" />
+      <image class="hero-decor hero-decor-br" src="/static/ui/decor/leaf-corner-br.png" mode="aspectFit" />
 
-				<!-- 添加评论区 -->
-				<view class="comments-section">
-					<!-- 评论输入框 -->
-					<view class="comment-input-wrapper">
-						<input 
-							class="comment-input" 
-							v-model="post.newComment"
-							placeholder="说点什么..."
-							@confirm="submitComment(post)"
-						/>
-						<button 
-							class="send-btn" 
-							:disabled="!post.newComment"
-							@tap="submitComment(post)"
-						>发送</button>
-					</view>
 
-					<!-- 评论列表 -->
-					<view class="comments-list" v-if="post.comments && post.comments.length">
-						<view class="comment-item" v-for="comment in post.comments" :key="comment.comment_id">
-							<view class="comment-user">
-								<text class="comment-username">{{comment.username}}</text>
-								<text class="comment-time">{{comment.create_time}}</text>
-							</view>
-							<text class="comment-content">{{comment.content}}</text>
-						</view>
-					</view>
-				</view>
-			</view>
-			
-			<!-- 加载更多 -->
-			<view class="loading-more" v-if="isLoading">加载中...</view>
-			<view class="no-more" v-if="!hasMore && posts.length">没有更多了</view>
-			<view class="empty-tip" v-if="!posts.length && !isLoading">暂无帖子</view>
-		</scroll-view>
-		
-		<!-- 发布弹窗 -->
-		<view class="popup-mask" v-if="showPublish" @tap="closePublishPopup">
-			<view class="popup-content publish-popup" @tap.stop>
-				<view class="popup-header">
-					<text class="cancel-btn" @tap="closePublishPopup">取消</text>
-					<text class="popup-title">发布帖子</text>
-					<button 
-						class="publish-btn-small" 
-						:disabled="!newPost.content && !newPost.images.length"
-						@tap="submitPost"
-					>发布</button>
-				</view>
-				
-				<view class="popup-body">
-					<textarea 
-						class="post-textarea" 
-						v-model="newPost.content"
-						placeholder="分享你的农作物种植经验..."
-						maxlength="500"
-						auto-height
-					></textarea>
-					
-					<!-- 图片上传区域 -->
-					<view class="upload-section">
-						<view class="image-grid">
-							<view 
-								class="image-item" 
-								v-for="(image, index) in newPost.images" 
-								:key="index"
-							>
-								<image :src="image" mode="aspectFill"></image>
-								<view class="delete-btn" @tap.stop="deleteImage(index)">×</view>
-							</view>
-							<view 
-								class="upload-btn" 
-								@tap="chooseImage" 
-								v-if="newPost.images.length < 9"
-							>
-								<text class="camera-icon">+</text>
-								<text class="upload-text">{{newPost.images.length}}/9</text>
-							</view>
-						</view>
-					</view>
-				</view>
-			</view>
-		</view>
-		
-		<!-- 评论弹窗 -->
-		<view class="popup-mask" v-if="showCommentPopup" @tap="closeCommentPopup">
-			<view class="popup-content" @tap.stop>
-				<view class="popup-header">
-					<text class="popup-title">评论</text>
-					<text class="popup-close" @tap="closeCommentPopup">×</text>
-				</view>
-				
-				<view class="popup-body">
-					<scroll-view scroll-y class="comments-list">
-						<view 
-							class="comment-item" 
-							v-for="comment in comments" 
-							:key="comment.comment_id"
-						>
-							<view class="comment-header">
-								<text class="username">{{comment.username}}</text>
-								<text class="time">{{comment.create_time}}</text>
-							</view>
-							<text class="comment-content">{{comment.content}}</text>
-						</view>
-						<view class="empty-tip" v-if="!comments.length">暂无评论</view>
-					</scroll-view>
-					
-					<view class="comment-input-section">
-						<input 
-							class="comment-input" 
-							v-model="newComment"
-							placeholder="说点什么..."
-							@confirm="submitComment"
-						/>
-						<button 
-							class="comment-btn" 
-							:disabled="!newComment"
-							@tap="submitComment"
-						>发送</button>
-					</view>
-				</view>
-			</view>
-		</view>
-	</view>
+      <view class="hero-content">
+        <view class="brand-chip">
+          <image class="brand-chip-icon" src="/static/ui/icons/ic-community.svg" mode="aspectFit" />
+          <text class="brand-chip-text">讨论</text>
+        </view>
+        <view class="hero-title">农业社区</view>
+        <view class="hero-subtitle">交流种植经验，分享识别案例与防治心得</view>
+      </view>
+    </view>
+
+    <view class="content-wrap">
+      <view class="quick-card card">
+        <view class="quick-left">
+          <view class="quick-icon-wrap">
+            <image class="quick-icon" src="/static/ui/icons/ic-post.svg" mode="aspectFit" />
+          </view>
+          <view class="quick-meta">
+            <text class="quick-title">发布农技动态</text>
+            <text class="quick-desc">支持图文内容，最多上传 9 张图片</text>
+          </view>
+        </view>
+        <view class="quick-btn" @tap="openPostSheet">发帖</view>
+      </view>
+
+      <view class="feed-card card">
+        <view class="section-head section-head-between">
+          <view class="section-head-left">
+            <view class="section-mark"></view>
+            <text class="section-title">社区动态</text>
+          </view>
+          <text class="section-link" @tap="refreshPosts">刷新</text>
+        </view>
+
+        <template v-if="loading && posts.length === 0">
+          <view class="state-box">
+            <text class="state-text">正在加载社区内容...</text>
+          </view>
+        </template>
+
+        <template v-else-if="posts.length === 0">
+          <view class="empty-box">
+            <image class="empty-image" src="/static/ui/empty/empty-posts.png" mode="aspectFit" />
+            <text class="empty-title">社区还没有帖子</text>
+            <text class="empty-desc">发布第一条图文内容，分享你的作物管理经验</text>
+          </view>
+        </template>
+
+        <view class="post-list" v-else>
+          <view class="post-card" v-for="post in posts" :key="post.post_id">
+            <view class="post-head">
+              <view class="avatar">{{ getInitial(post.username) }}</view>
+              <view class="post-user">
+                <view class="post-name-row">
+                  <text class="post-name">{{ post.username || '农友' }}</text>
+                  <text class="post-status">交流中</text>
+                </view>
+                <text class="post-time">{{ post.create_time }}</text>
+              </view>
+            </view>
+
+            <view class="post-content" v-if="post.content">
+              <text class="post-text" :class="{ collapsed: !post.expanded && post.content.length > 80 }">{{ post.content }}</text>
+              <text class="expand-link" v-if="post.content.length > 80" @tap="toggleExpand(post)">{{ post.expanded ? '收起' : '展开全文' }}</text>
+            </view>
+
+            <view class="post-images" v-if="post.images && post.images.length">
+              <image
+                class="post-image"
+                v-for="(img, index) in post.images"
+                :key="index"
+                :src="fullImageUrl(img)"
+                mode="aspectFill"
+                @tap="previewPostImages(post.images, index)"
+              />
+            </view>
+
+            <view class="post-actions">
+              <view class="action-item" :class="{ liked: post.is_liked }" @tap="toggleLike(post)">
+                <image class="action-icon" src="/static/ui/icons/ic-like.svg" mode="aspectFit" />
+                <text>{{ post.like_count || 0 }}</text>
+              </view>
+              <view class="action-item" @tap="openComments(post)">
+                <image class="action-icon" src="/static/ui/icons/ic-comment.svg" mode="aspectFit" />
+                <text>{{ post.comment_count || 0 }}</text>
+              </view>
+            </view>
+
+            <view class="comment-preview" v-if="post.comment_count">
+              <text class="comment-preview-text" @tap="openComments(post)">查看全部 {{ post.comment_count }} 条评论</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="load-more" v-if="posts.length">
+          <text v-if="loadingMore">加载中...</text>
+          <text v-else-if="hasMore" @tap="loadMore">加载更多</text>
+          <text v-else>— 已加载全部 —</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="float-btn" @tap="openPostSheet">
+      <image class="float-icon" src="/static/ui/icons/ic-post.svg" mode="aspectFit" />
+    </view>
+
+    <view class="sheet-mask" v-if="postSheetVisible" @tap="closePostSheet"></view>
+    <view class="post-sheet" v-if="postSheetVisible">
+      <view class="sheet-handle"></view>
+      <view class="sheet-head">
+        <view>
+          <text class="sheet-title">发布新帖子</text>
+          <text class="sheet-subtitle">分享作物问题、识别案例或防治经验</text>
+        </view>
+        <text class="sheet-close" @tap="closePostSheet">关闭</text>
+      </view>
+
+      <scroll-view class="sheet-scroll" scroll-y>
+        <view class="editor-card">
+          <textarea
+            class="post-textarea"
+            v-model.trim="postForm.content"
+            maxlength="500"
+            placeholder="说点什么，例如病害现象、处理经验、用药建议..."
+            placeholder-class="textarea-placeholder"
+          />
+          <view class="counter-row">
+            <text>{{ postForm.content.length }}/500</text>
+          </view>
+        </view>
+
+        <view class="image-editor-card">
+          <view class="image-editor-head">
+            <text class="image-editor-title">图片</text>
+            <text class="image-editor-tip">{{ postForm.images.length }}/9</text>
+          </view>
+          <view class="selected-grid">
+            <view class="selected-img-wrap" v-for="(img, index) in postForm.images" :key="index">
+              <image class="selected-img" :src="img" mode="aspectFill" @tap="previewLocalImages(index)" />
+              <view class="remove-img" @tap.stop="removeLocalImage(index)">×</view>
+            </view>
+            <view class="add-img" v-if="postForm.images.length < 9" @tap="choosePostImages">
+              <image class="add-img-icon" src="/static/ui/icons/ic-upload.svg" mode="aspectFit" />
+              <text>添加图片</text>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view class="sheet-footer">
+        <button class="submit-btn" :loading="publishing" :disabled="publishing" @tap="submitPost">
+          <text class="submit-btn-text">{{ publishing ? '发布中...' : '发布帖子' }}</text>
+        </button>
+      </view>
+    </view>
+
+    <view class="sheet-mask" v-if="commentSheetVisible" @tap="closeComments"></view>
+    <view class="comment-sheet" v-if="commentSheetVisible">
+      <view class="sheet-handle"></view>
+      <view class="sheet-head compact">
+        <view>
+          <text class="sheet-title">评论</text>
+          <text class="sheet-subtitle">{{ activePost ? activePost.comment_count || 0 : 0 }} 条讨论</text>
+        </view>
+        <text class="sheet-close" @tap="closeComments">关闭</text>
+      </view>
+
+      <scroll-view class="comment-scroll" scroll-y>
+        <view class="comment-source" v-if="activePost">
+          <view class="comment-source-head">
+            <view class="mini-avatar">{{ getInitial(activePost.username) }}</view>
+            <text class="comment-source-name">{{ activePost.username || '农友' }}</text>
+          </view>
+          <text class="comment-source-text">{{ activePost.content || '图片分享' }}</text>
+        </view>
+
+        <template v-if="commentsLoading">
+          <view class="state-box compact-state">
+            <text class="state-text">正在加载评论...</text>
+          </view>
+        </template>
+
+        <template v-else-if="comments.length === 0">
+          <view class="empty-box comment-empty">
+            <image class="empty-image small" src="/static/ui/empty/empty-posts.png" mode="aspectFit" />
+            <text class="empty-title">暂无评论</text>
+            <text class="empty-desc">留下你的建议或经验，帮助更多农友</text>
+          </view>
+        </template>
+
+        <view class="comment-list" v-else>
+          <view class="comment-item" v-for="comment in comments" :key="comment.comment_id">
+            <view class="mini-avatar">{{ getInitial(comment.username) }}</view>
+            <view class="comment-body">
+              <view class="comment-meta">
+                <text class="comment-name">{{ comment.username || '农友' }}</text>
+                <text class="comment-time">{{ comment.create_time }}</text>
+              </view>
+              <text class="comment-text">{{ comment.content }}</text>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view class="comment-input-bar">
+        <input
+          class="comment-input"
+          v-model.trim="commentText"
+          placeholder="说点什么..."
+          placeholder-class="comment-placeholder"
+          confirm-type="send"
+          @confirm="submitComment"
+        />
+        <view class="send-btn" @tap="submitComment">
+          <image class="send-icon" src="/static/ui/icons/ic-comment.svg" mode="aspectFit" />
+        </view>
+      </view>
+    </view>
+  </view>
 </template>
 
 <script>
 import config from '@/config.js'
 
 export default {
-	data() {
-		return {
-			posts: [],
-			comments: [],
-			currentPage: 1,
-			pageSize: 10,
-			hasMore: true,
-			isLoading: false,
-			isRefreshing: false,
-			showPublish: false,
-			showCommentPopup: false,
-			currentPost: null,
-			newPost: {
-				content: '',
-				images: []
-			},
-			newComment: '',
-			userInfo: null
-		}
-	},
-	onLoad() {
-		this.userInfo = uni.getStorageSync('userInfo')
-		if (!this.userInfo) {
-			uni.redirectTo({
-				url: '/pages/login/login'
-			})
-			return
-		}
-		this.getPosts()
-	},
-	methods: {
-		// 显示发布弹窗
-		showPublishPopup() {
-			this.showPublish = true
-		},
-		
-		// 关闭发布弹窗
-		closePublishPopup() {
-			this.showPublish = false
-			this.newPost = {
-				content: '',
-				images: []
-			}
-		},
-		
-		// 选择图片
-		chooseImage() {
-			const maxCount = 9 - this.newPost.images.length
-			if (maxCount <= 0) {
-				uni.showToast({
-					title: '最多上传9张图片',
-					icon: 'none'
-				})
-				return
-			}
-			
-			uni.chooseImage({
-				count: maxCount,
-				success: (res) => {
-					this.newPost.images = [...this.newPost.images, ...res.tempFilePaths]
-				}
-			})
-		},
-		
-		// 删除图片
-		deleteImage(index) {
-			this.newPost.images.splice(index, 1)
-		},
-		
-		// 提交帖子
-		async submitPost() {
-			if (!this.newPost.content && !this.newPost.images.length) {
-				return
-			}
-			
-			try {
-				// 先上传图片
-				const uploadedImages = []
-				for (const image of this.newPost.images) {
-					try {
-						const uploadRes = await uni.uploadFile({
-							url: config.baseUrl + '/api/upload',
-							filePath: image,
-							name: 'file',
-							header: {
-								'content-type': 'multipart/form-data'
-							},
-							formData: {
-								user_id: this.userInfo.userId
-							}
-						})
-						
-						const result = JSON.parse(uploadRes.data)
-						if (result.success) {
-							uploadedImages.push(result.path)
-						}
-					} catch (e) {
-						console.error('图片上传失败:', e)
-					}
-				}
-				
-				// 发布帖子
-				const formData = {
-					user_id: this.userInfo.userId,
-					content: this.newPost.content || '',
-					images: uploadedImages.length ? uploadedImages.join(',') : ''
-				}
-				
-				console.log('发布帖子数据:', formData)
-				
-				const res = await uni.request({
-					url: config.baseUrl + '/api/posts',
-					method: 'POST',
-					header: {
-						'content-type': 'application/x-www-form-urlencoded'
-					},
-					data: formData
-				})
-				
-				if (res.data.success) {
-					uni.showToast({
-						title: '发布成功',
-						icon: 'success'
-					})
-					this.closePublishPopup()
-					this.refreshPosts()
-				} else {
-					throw new Error(res.data.message || '发布失败')
-				}
-			} catch (e) {
-				uni.showToast({
-					title: e.message || '发布失败',
-					icon: 'none'
-				})
-				console.error('发布失败:', e)
-			}
-		},
-		
-		// 获取帖子列表
-		async getPosts() {
-			try {
-				const res = await uni.request({
-					url: `${config.baseUrl}/api/posts`,
-					method: 'GET',
-					data: {
-						page: this.currentPage,
-						page_size: this.pageSize,
-						user_id: this.userInfo.userId
-					}
-				})
-				
-				if (res.data.success) {
-					const posts = res.data.posts.map(post => ({
-						...post,
-						newComment: '',
-						comments: [],
-						isExpanded: false
-					}))
-					
-					// 如果是刷新或第一页，直接替换数据
-					if (this.currentPage === 1) {
-						this.posts = posts
-					} else {
-						// 否则追加数据
-						this.posts = [...this.posts, ...posts]
-					}
-					
-					// 判断是否还有更多数据
-					this.hasMore = posts.length === this.pageSize
-					
-					// 获取每个帖子的评论
-					for (const post of posts) {
-						await this.getComments(post)
-					}
-				}
-			} catch (e) {
-				console.error('获取帖子列表失败:', e)
-				uni.showToast({
-					title: '获取帖子失败',
-					icon: 'none'
-				})
-				
-				// 加载失败时恢复页码
-				if (this.currentPage > 1) {
-					this.currentPage--
-				}
-			} finally {
-				this.isLoading = false
-				this.isRefreshing = false
-			}
-		},
-		
-		// 刷新帖子列表
-		refreshPosts() {
-			this.currentPage = 1
-			this.hasMore = true
-			this.getPosts()
-		},
-		
-		// 加载更多
-		async loadMore() {
-			// 如果正在加载、刷新或没有更多数据，则不执行
-			if (this.isLoading || this.isRefreshing || !this.hasMore) {
-				return
-			}
-			
-			this.isLoading = true
-			this.currentPage++
-			await this.getPosts()
-		},
-		
-		// 下拉刷新
-		async onRefresh() {
-			this.isRefreshing = true
-			this.currentPage = 1
-			this.hasMore = true
-			await this.getPosts()
-		},
-		
-		// 切换内容展开状态
-		toggleContent(post) {
-			this.$set(post, 'isExpanded', !post.isExpanded)
-		},
-		
-		// 修改点赞方法，添加动画效果
-		async toggleLike(post) {
-			if (post.isLiking) return // 防止重复点击
-			
-			try {
-				post.isLiking = true
-				const res = await uni.request({
-					url: `${config.baseUrl}/api/posts/${post.post_id}/like`,
-					method: 'POST',
-					header: {
-						'content-type': 'application/json'
-					},
-					data: {
-						user_id: this.userInfo.userId
-					}
-				})
-				
-				if (res.data.success) {
-					post.is_liked = !post.is_liked
-					post.like_count += post.is_liked ? 1 : -1
-					
-					// 只在点赞时显示动画
-					if (post.is_liked) {
-						setTimeout(() => {
-							post.isLiking = false
-						}, 800) // 动画持续时间
-					} else {
-						post.isLiking = false
-					}
-				}
-			} catch (e) {
-				console.error('点赞失败:', e)
-				uni.showToast({
-					title: '操作失败',
-					icon: 'none'
-				})
-				post.isLiking = false
-			}
-		},
-		
-		// 显示评论
-		async showComments(post) {
-			this.currentPost = post
-			this.showCommentPopup = true
-			this.getComments(post.post_id)
-		},
-		
-		// 关闭评论弹窗
-		closeCommentPopup() {
-			this.showCommentPopup = false
-			this.currentPost = null
-			this.newComment = ''
-			this.comments = []
-		},
-		
-		// 获取评论列表
-		async getComments(post) {
-			try {
-				const res = await uni.request({
-					url: `${config.baseUrl}/api/posts/${post.post_id}/comments`,
-					method: 'GET'
-				})
-				
-				if (res.data.success) {
-					this.$set(post, 'comments', res.data.comments)
-				}
-			} catch (e) {
-				console.error('获取评论失败:', e)
-			}
-		},
-		
-		// 修改提交评论方法
-		async submitComment(post) {
-			if (!post.newComment) return
-			
-			try {
-				const res = await uni.request({
-					url: `${config.baseUrl}/api/posts/${post.post_id}/comments`,
-					method: 'POST',
-					header: {
-						'content-type': 'application/json'
-					},
-					data: {
-						user_id: this.userInfo.userId,
-						content: post.newComment
-					}
-				})
-				
-				if (res.data.success) {
-					// 清空输入框
-					post.newComment = ''
-					// 重新获取评论
-					await this.getComments(post)
-					// 更新评论数
-					post.comment_count++
-					
-					uni.showToast({
-						title: '评论成功',
-						icon: 'success'
-					})
-				}
-			} catch (e) {
-				console.error('评论失败:', e)
-				uni.showToast({
-					title: '评论失败',
-					icon: 'none'
-				})
-			}
-		},
-		
-		// 获取图片URL
-		getImageUrl(path) {
-			return config.baseUrl + '/' + path
-		},
-		
-		// 预览图片
-		previewImage(images, current) {
-			uni.previewImage({
-				urls: images.map(img => this.getImageUrl(img)),
-				current
-			})
-		}
-	}
+  data() {
+    return {
+      userInfo: null,
+      posts: [],
+      page: 1,
+      pageSize: 10,
+      hasMore: true,
+      loading: false,
+      loadingMore: false,
+      postSheetVisible: false,
+      publishing: false,
+      postForm: {
+        content: '',
+        images: []
+      },
+      commentSheetVisible: false,
+      activePost: null,
+      comments: [],
+      commentsLoading: false,
+      commentText: ''
+    }
+  },
+  onShow() {
+    this.loadUserInfo()
+    this.refreshPosts()
+  },
+  onPullDownRefresh() {
+    this.refreshPosts().finally(() => {
+      uni.stopPullDownRefresh()
+    })
+  },
+  onReachBottom() {
+    this.loadMore()
+  },
+  methods: {
+    loadUserInfo() {
+      const userInfo = uni.getStorageSync('userInfo')
+      this.userInfo = userInfo && userInfo.userId ? userInfo : null
+    },
+    async refreshPosts() {
+      this.page = 1
+      this.hasMore = true
+      this.loading = true
+      try {
+        const posts = await this.fetchPosts(1)
+        this.posts = posts
+        this.hasMore = posts.length >= this.pageSize
+      } catch (error) {
+        console.error('refresh posts error:', error)
+        this.toast('社区内容加载失败')
+      } finally {
+        this.loading = false
+      }
+    },
+    async loadMore() {
+      if (this.loading || this.loadingMore || !this.hasMore) return
+      this.loadingMore = true
+      try {
+        const nextPage = this.page + 1
+        const posts = await this.fetchPosts(nextPage)
+        this.posts = this.posts.concat(posts)
+        this.page = nextPage
+        this.hasMore = posts.length >= this.pageSize
+      } catch (error) {
+        console.error('load more posts error:', error)
+        this.toast('加载更多失败')
+      } finally {
+        this.loadingMore = false
+      }
+    },
+    fetchPosts(page) {
+      return new Promise((resolve, reject) => {
+        uni.request({
+          url: config.baseUrl + '/api/posts',
+          method: 'GET',
+          data: {
+            page,
+            page_size: this.pageSize,
+            user_id: this.userInfo ? this.userInfo.userId : undefined
+          },
+          success: ({ data }) => {
+            if (data && data.success) {
+              const posts = (data.posts || []).map(item => ({
+                ...item,
+                expanded: false
+              }))
+              resolve(posts)
+              return
+            }
+            reject(new Error((data && data.message) || '获取失败'))
+          },
+          fail: reject
+        })
+      })
+    },
+    openPostSheet() {
+      if (!this.ensureLogin()) return
+      this.postSheetVisible = true
+    },
+    closePostSheet() {
+      if (this.publishing) return
+      this.postSheetVisible = false
+    },
+    choosePostImages() {
+      const remain = 9 - this.postForm.images.length
+      if (remain <= 0) return
+      uni.chooseImage({
+        count: remain,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera'],
+        success: ({ tempFilePaths }) => {
+          this.postForm.images = this.postForm.images.concat(tempFilePaths || []).slice(0, 9)
+        }
+      })
+    },
+    removeLocalImage(index) {
+      this.postForm.images.splice(index, 1)
+    },
+    previewLocalImages(index) {
+      uni.previewImage({
+        current: this.postForm.images[index],
+        urls: this.postForm.images
+      })
+    },
+    async submitPost() {
+      if (!this.ensureLogin()) return
+      if (!this.postForm.content && this.postForm.images.length === 0) {
+        this.toast('请输入内容或选择图片')
+        return
+      }
+      if (this.publishing) return
+
+      this.publishing = true
+      try {
+        const imagePaths = []
+        for (const filePath of this.postForm.images) {
+          const uploadedPath = await this.uploadPostImage(filePath)
+          if (uploadedPath) imagePaths.push(uploadedPath)
+        }
+
+        await this.createPost(imagePaths)
+        uni.showToast({ title: '发布成功', icon: 'success' })
+        this.postForm = { content: '', images: [] }
+        this.postSheetVisible = false
+        this.refreshPosts()
+      } catch (error) {
+        console.error('submit post error:', error)
+        this.toast(error.message || '发布失败')
+      } finally {
+        this.publishing = false
+      }
+    },
+    uploadPostImage(filePath) {
+      return new Promise((resolve, reject) => {
+        uni.uploadFile({
+          url: config.baseUrl + '/api/upload',
+          filePath,
+          name: 'file',
+          success: ({ data }) => {
+            try {
+              const payload = typeof data === 'string' ? JSON.parse(data) : data
+              if (payload && payload.success) {
+                resolve(payload.path)
+                return
+              }
+              reject(new Error((payload && payload.message) || '图片上传失败'))
+            } catch (error) {
+              reject(error)
+            }
+          },
+          fail: reject
+        })
+      })
+    },
+    createPost(imagePaths) {
+      return new Promise((resolve, reject) => {
+        uni.request({
+          url: config.baseUrl + '/api/posts',
+          method: 'POST',
+          data: {
+            user_id: this.userInfo.userId,
+            content: this.postForm.content,
+            images: imagePaths.join(',')
+          },
+          header: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          success: ({ data }) => {
+            if (data && data.success) {
+              resolve(data)
+              return
+            }
+            reject(new Error((data && data.message) || '发布失败'))
+          },
+          fail: reject
+        })
+      })
+    },
+    async toggleLike(post) {
+      if (!this.ensureLogin()) return
+      const oldLiked = !!post.is_liked
+      post.is_liked = !oldLiked
+      post.like_count = Math.max(0, Number(post.like_count || 0) + (oldLiked ? -1 : 1))
+
+      try {
+        await new Promise((resolve, reject) => {
+          uni.request({
+            url: `${config.baseUrl}/api/posts/${post.post_id}/like`,
+            method: 'POST',
+            data: {
+              user_id: this.userInfo.userId
+            },
+            header: {
+              'Content-Type': 'application/json'
+            },
+            success: ({ data }) => {
+              if (data && data.success) {
+                resolve(data)
+                return
+              }
+              reject(new Error((data && data.message) || '操作失败'))
+            },
+            fail: reject
+          })
+        })
+      } catch (error) {
+        post.is_liked = oldLiked
+        post.like_count = Math.max(0, Number(post.like_count || 0) + (oldLiked ? 1 : -1))
+        console.error('like error:', error)
+        this.toast('操作失败')
+      }
+    },
+    async openComments(post) {
+      this.activePost = post
+      this.commentSheetVisible = true
+      this.commentText = ''
+      await this.fetchComments(post)
+    },
+    closeComments() {
+      this.commentSheetVisible = false
+      this.activePost = null
+      this.comments = []
+      this.commentText = ''
+    },
+    fetchComments(post) {
+      this.commentsLoading = true
+      return new Promise((resolve) => {
+        uni.request({
+          url: `${config.baseUrl}/api/posts/${post.post_id}/comments`,
+          method: 'GET',
+          success: ({ data }) => {
+            if (data && data.success) {
+              this.comments = data.comments || []
+            } else {
+              this.comments = []
+              this.toast((data && data.message) || '评论加载失败')
+            }
+            resolve()
+          },
+          fail: () => {
+            this.comments = []
+            this.toast('评论加载失败')
+            resolve()
+          },
+          complete: () => {
+            this.commentsLoading = false
+          }
+        })
+      })
+    },
+    async submitComment() {
+      if (!this.ensureLogin()) return
+      if (!this.activePost) return
+      if (!this.commentText) {
+        this.toast('请输入评论内容')
+        return
+      }
+
+      const content = this.commentText
+      this.commentText = ''
+      try {
+        await new Promise((resolve, reject) => {
+          uni.request({
+            url: `${config.baseUrl}/api/posts/${this.activePost.post_id}/comments`,
+            method: 'POST',
+            data: {
+              user_id: this.userInfo.userId,
+              content
+            },
+            header: {
+              'Content-Type': 'application/json'
+            },
+            success: ({ data }) => {
+              if (data && data.success) {
+                resolve(data)
+                return
+              }
+              reject(new Error((data && data.message) || '评论失败'))
+            },
+            fail: reject
+          })
+        })
+
+        this.activePost.comment_count = Number(this.activePost.comment_count || 0) + 1
+        await this.fetchComments(this.activePost)
+      } catch (error) {
+        this.commentText = content
+        console.error('comment error:', error)
+        this.toast('评论失败')
+      }
+    },
+    toggleExpand(post) {
+      post.expanded = !post.expanded
+    },
+    previewPostImages(images, index) {
+      const urls = images.map(img => this.fullImageUrl(img))
+      uni.previewImage({
+        current: urls[index],
+        urls
+      })
+    },
+    fullImageUrl(path) {
+      if (!path) return '/static/ui/empty/empty-posts.png'
+      if (/^https?:\/\//.test(path)) return path
+      if (path.startsWith('/')) return config.baseUrl + path
+      return `${config.baseUrl}/${path}`
+    },
+    getInitial(name) {
+      if (!name) return '农'
+      return String(name).slice(0, 1)
+    },
+    ensureLogin() {
+      if (this.userInfo && this.userInfo.userId) return true
+      uni.showModal({
+        title: '请先登录',
+        content: '登录后可发布帖子、点赞和评论。',
+        confirmText: '去登录',
+        success: ({ confirm }) => {
+          if (confirm) {
+            uni.navigateTo({ url: '/pages/login/login' })
+          }
+        }
+      })
+      return false
+    },
+    toast(title) {
+      uni.showToast({ title, icon: 'none' })
+    }
+  }
 }
 </script>
 
 <style>
-.container {
-	min-height: 100vh;
-	background: linear-gradient(180deg, #dceaf2 0%, #edf6f0 32%, #eaf3ea 100%);
-	padding-bottom: 100rpx;
+page {
+  min-height: 100%;
+  background: linear-gradient(180deg, #edf7ed 0%, #f7fbf6 40%, #f4faf4 100%);
 }
 
-.status-ambience {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 138rpx;
-	background: linear-gradient(90deg, rgba(53, 156, 74, 0.84), rgba(68, 170, 88, 0.65));
-	z-index: 0;
+.discuss-page {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #edf7ed 0%, #f7fbf6 40%, #f4faf4 100%);
+  padding-bottom: 150rpx;
 }
 
-.hero {
-	margin: 20rpx 20rpx 0;
-	padding: 24rpx 28rpx;
-	border-radius: 24rpx;
-	background: linear-gradient(135deg, rgba(45, 151, 65, 0.2), rgba(255, 255, 255, 0.65));
-	border: 2rpx solid rgba(255, 255, 255, 0.72);
+.hero-section {
+  position: relative;
+  height: 400rpx;
+  overflow: hidden;
+  border-bottom-left-radius: 56rpx;
+  border-bottom-right-radius: 56rpx;
+}
+
+.hero-bg,
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-overlay {
+  background: linear-gradient(180deg, rgba(41, 130, 64, 0.18) 0%, rgba(65, 179, 92, 0.34) 50%, rgba(101, 204, 126, 0.64) 100%);
+}
+
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 2;
+  filter: blur(8rpx);
+}
+
+.hero-blob-left {
+  width: 180rpx;
+  height: 180rpx;
+  left: -52rpx;
+  top: 104rpx;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.08) 58%, rgba(255, 255, 255, 0) 100%);
+}
+
+.hero-blob-right {
+  width: 220rpx;
+  height: 220rpx;
+  right: -48rpx;
+  top: 74rpx;
+  background: radial-gradient(circle, rgba(214, 255, 222, 0.28) 0%, rgba(214, 255, 222, 0.08) 60%, rgba(214, 255, 222, 0) 100%);
+}
+
+.hero-decor{
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.hero-decor-tl {
+  width: 520rpx;
+  height: 520rpx;
+  left: -8rpx;
+  top: -6rpx;
+  opacity: 0.82;
+}
+
+.hero-decor-br {
+  width: 520rpx;
+  height: 520rpx;
+  right: -24rpx;
+  bottom: -22rpx;
+  opacity: 0.55;
+}
+
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  padding: 72rpx 40rpx 0;
+  color: #ffffff;
+}
+
+.brand-chip {
+  height: 56rpx;
+  padding: 0 20rpx 0 12rpx;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8rpx 20rpx rgba(34, 91, 45, 0.10);
+}
+
+.brand-chip-icon {
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 10rpx;
+}
+
+.brand-chip-text {
+  font-size: 24rpx;
 }
 
 .hero-title {
-	font-size: 42rpx;
-	font-weight: 700;
-	color: #1f6a32;
-	display: block;
+  color:#DD5710;
+  margin-top: 28rpx;
+  font-size: 62rpx;
+  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  text-shadow: 0 8rpx 18rpx rgba(29, 85, 40, 0.16);
 }
 
 .hero-subtitle {
-	margin-top: 10rpx;
-	font-size: 24rpx;
-	color: #4f6f55;
-	display: block;
+  margin-top: 18rpx;
+  width: 560rpx;
+  max-width: 100%;
+  font-size: 28rpx;
+  font-weight: bold;
+  line-height: 1.6;
+  color:#F5AB58;
 }
 
-/* 发布按钮 */
-.publish-btn {
-	position: fixed;
-	right: 30rpx;
-	bottom: 140rpx;
-	width: 100rpx;
-	height: 100rpx;
-	background: linear-gradient(135deg, #2C8A43, #3CA55C);
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	box-shadow: 0 4rpx 16rpx rgba(44,138,67,0.3);
-	z-index: 100;
-	overflow: hidden;
+.content-wrap {
+  position: relative;
+  z-index: 5;
+  margin-top: -70rpx;
+  padding: 0 24rpx 42rpx;
 }
 
-.publish-btn::after {
-	content: '';
-	position: absolute;
-	width: 120rpx;
-	height: 120rpx;
-	right: -30rpx;
-	bottom: -30rpx;
-	border-radius: 50%;
-	background: radial-gradient(circle, rgba(132,212,138,0.45), rgba(132,212,138,0) 72%);
+.card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 32rpx;
+  box-shadow: 0 20rpx 54rpx rgba(31, 101, 46, 0.10);
+  border: 2rpx solid rgba(255, 255, 255, 0.7);
 }
 
-.plus-icon {
-	color: #fff;
-	font-size: 50rpx;
-	font-weight: bold;
-	line-height: 1;
+.quick-card {
+  padding: 26rpx 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-/* 帖子列表 */
+.quick-left {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.quick-icon-wrap {
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+}
+
+.quick-icon {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.quick-meta {
+  min-width: 0;
+  margin-left: 18rpx;
+}
+
+.quick-title {
+  display: block;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #243126;
+}
+
+.quick-desc {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #8a9a8d;
+}
+
+.quick-btn {
+  min-width: 106rpx;
+  height: 58rpx;
+  padding: 0 22rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, #31b35d 0%, #42bb65 100%);
+  color: #ffffff;
+  font-size: 26rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10rpx 24rpx rgba(57, 169, 75, 0.22);
+}
+
+.feed-card {
+  margin-top: 24rpx;
+  padding: 28rpx;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+}
+
+.section-head-between {
+  justify-content: space-between;
+}
+
+.section-head-left {
+  display: flex;
+  align-items: center;
+}
+
+.section-mark {
+  width: 18rpx;
+  height: 36rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(180deg, #39a94b 0%, #72cf7b 100%);
+  margin-right: 16rpx;
+}
+
+.section-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #243126;
+}
+
+.section-link {
+  font-size: 24rpx;
+  color: #39a94b;
+  font-weight: 600;
+}
+
+.state-box,
+.empty-box {
+  padding: 42rpx 12rpx 28rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.state-text,
+.empty-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #516154;
+}
+
+.empty-image {
+  width: 240rpx;
+  height: 170rpx;
+  opacity: 0.96;
+}
+
+.empty-image.small {
+  width: 190rpx;
+  height: 130rpx;
+}
+
+.empty-title {
+  margin-top: 14rpx;
+}
+
+.empty-desc {
+  margin-top: 10rpx;
+  width: 520rpx;
+  max-width: 100%;
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: #90a090;
+  text-align: center;
+}
+
 .post-list {
-	height: 100vh;
-	box-sizing: border-box;
+  margin-top: 18rpx;
 }
 
-.post-item {
-	background: rgba(255,255,255,0.86);
-	margin: 20rpx;
-	border-radius: 28rpx;
-	padding: 24rpx;
-	box-shadow: 0 12rpx 28rpx rgba(45,96,51,0.09);
-	border: 2rpx solid rgba(255,255,255,0.66);
+.post-card {
+  padding: 26rpx 0;
+  border-bottom: 2rpx solid #eef4ee;
 }
 
-.post-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 20rpx;
+.post-card:last-child {
+  border-bottom: none;
 }
 
-.user-info {
-	display: flex;
-	align-items: center;
-	gap: 16rpx;
+.post-head {
+  display: flex;
+  align-items: center;
+}
+
+.avatar,
+.mini-avatar {
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2ea14d 0%, #48bf63 100%);
+  color: #ffffff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .avatar {
-	width: 80rpx;
-	height: 80rpx;
-	background: linear-gradient(135deg, #2C8A43, #3CA55C);
-	color: #fff;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 32rpx;
-	font-weight: bold;
+  width: 82rpx;
+  height: 82rpx;
+  font-size: 34rpx;
+  box-shadow: 0 10rpx 22rpx rgba(57, 169, 75, 0.22);
 }
 
-.user-meta {
-	display: flex;
-	flex-direction: column;
-	gap: 4rpx;
+.mini-avatar {
+  width: 52rpx;
+  height: 52rpx;
+  font-size: 24rpx;
 }
 
-.username {
-	font-size: 28rpx;
-	color: #333;
-	font-weight: 500;
+.post-user {
+  min-width: 0;
+  margin-left: 16rpx;
 }
 
-.time {
-	font-size: 24rpx;
-	color: #999;
+.post-name-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10rpx;
 }
 
-.status-tag {
-	display: inline-block;
-	width: fit-content;
-	margin-top: 2rpx;
-	padding: 2rpx 12rpx;
-	border-radius: 999rpx;
-	font-size: 20rpx;
-	color: #2e8f40;
-	background: rgba(70, 172, 90, 0.14);
-	border: 1rpx solid rgba(70, 172, 90, 0.35);
+.post-name {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #243126;
+}
+
+.post-status {
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+  background: #edf8ef;
+  color: #39a94b;
+  font-size: 20rpx;
+  font-weight: 600;
+}
+
+.post-time {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #97a698;
 }
 
 .post-content {
-	margin-bottom: 20rpx;
+  margin-top: 22rpx;
 }
 
-.content-text {
-	font-size: 28rpx;
-	color: #333;
-	line-height: 1.6;
-	margin-bottom: 16rpx;
-	display: -webkit-box;
-	-webkit-box-orient: vertical;
-	-webkit-line-clamp: 3;
-	overflow: hidden;
+.post-text {
+  display: block;
+  font-size: 29rpx;
+  line-height: 1.75;
+  color: #38483c;
 }
 
-.content-expanded {
-	-webkit-line-clamp: unset;
+.post-text.collapsed {
+  max-height: 154rpx;
+  overflow: hidden;
 }
 
-.expand-btn {
-	font-size: 26rpx;
-	color: #2C8A43;
-	padding: 10rpx 0;
+.expand-link {
+  display: inline-block;
+  margin-top: 8rpx;
+  color: #39a94b;
+  font-size: 24rpx;
+  font-weight: 600;
 }
 
-/* 图片网格优化 */
-.image-grid {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 8rpx;
-	margin: 16rpx 0;
+.post-images {
+  margin-top: 18rpx;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
 }
 
-.image-item {
-	position: relative;
-	width: 100%;
-	padding-bottom: 100%;
-	overflow: hidden;
-	background: #f8f8f8;
-	border-radius: 8rpx;
+.post-image {
+  width: 196rpx;
+  height: 196rpx;
+  border-radius: 22rpx;
+  background: #f1f6f1;
 }
 
-.image-item image {
-	position: absolute;
-	top: 0;
-	left: 0;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
+.post-actions {
+  margin-top: 22rpx;
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
 }
 
-/* 互动栏优化 */
-.post-footer {
-	display: flex;
-	gap: 32rpx;
-	padding: 24rpx;
-	border-top: 1rpx solid #eaf2ea;
-	border-bottom: 1rpx solid #eaf2ea;
+.action-item {
+  height: 58rpx;
+  padding: 0 20rpx;
+  border-radius: 999rpx;
+  background: #f3f7f3;
+  color: #738074;
+  font-size: 24rpx;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
 }
 
-.action-btn {
-	display: flex;
-	align-items: center;
-	padding: 12rpx 24rpx;
-	border-radius: 40rpx;
-	transition: all 0.3s ease;
-	position: relative;
-	overflow: hidden;
-}
-
-.like-btn {
-	background: #f8f8f8;
-}
-
-.like-btn::before {
-	content: '';
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: rgba(255,68,68,0.1);
-	transform: scale(0);
-	border-radius: 40rpx;
-	transition: transform 0.3s ease;
-}
-
-.like-btn.liked::before {
-	transform: scale(1);
+.action-item.liked {
+  background: #edf8ef;
+  color: #39a94b;
 }
 
 .action-icon {
-	display: flex;
-	align-items: center;
-	gap: 8rpx;
-	position: relative;
-	z-index: 1;
+  width: 50rpx;
+  height: 50rpx;
 }
 
-.count-text {
-	font-size: 26rpx;
-	color: #666;
-	margin-left: 8rpx;
-	transition: all 0.3s ease;
+.comment-preview {
+  margin-top: 14rpx;
+  padding: 16rpx 18rpx;
+  border-radius: 18rpx;
+  background: #f8fbf8;
 }
 
-.count-text.liked {
-	color: #d64545;
-	font-weight: 500;
+.comment-preview-text {
+  font-size: 24rpx;
+  color: #7d8c80;
 }
 
-/* 添加点赞动画 */
-@keyframes heartBeat {
-	0% {
-		transform: scale(1);
-	}
-	25% {
-		transform: scale(1.3);
-	}
-	50% {
-		transform: scale(1);
-	}
-	75% {
-		transform: scale(1.3);
-	}
-	100% {
-		transform: scale(1);
-	}
+.load-more {
+  padding: 28rpx 0 4rpx;
+  text-align: center;
+  color: #98a798;
+  font-size: 24rpx;
 }
 
-.heart-beat {
-	animation: heartBeat 0.8s ease-in-out;
+.float-btn {
+  position: fixed;
+  right: 34rpx;
+  bottom: 154rpx;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #31b35d 0%, #42bb65 100%);
+  box-shadow: 0 16rpx 36rpx rgba(57, 169, 75, 0.28);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* 弹窗样式 */
-.popup-mask {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: rgba(0,0,0,0.6);
-	z-index: 999;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+.float-icon {
+  width: 44rpx;
+  height: 44rpx;
 }
 
-.popup-content {
-	width: 90%;
-	max-height: 90vh;
-	background: #fff;
-	border-radius: 20rpx;
-	overflow: hidden;
+.sheet-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(22, 32, 24, 0.32);
+  z-index: 30;
 }
 
-.popup-header {
-	padding: 30rpx;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	border-bottom: 2rpx solid #f5f5f5;
+.post-sheet,
+.comment-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 31;
+  background: #ffffff;
+  border-top-left-radius: 34rpx;
+  border-top-right-radius: 34rpx;
+  box-shadow: 0 -16rpx 48rpx rgba(31, 101, 46, 0.12);
+  overflow: hidden;
 }
 
-.popup-title {
-	font-size: 32rpx;
-	font-weight: bold;
-	color: #333;
+.post-sheet {
+  height: 82vh;
 }
 
-.popup-close {
-	font-size: 40rpx;
-	color: #999;
-	padding: 0 20rpx;
+.comment-sheet {
+  height: 76vh;
 }
 
-.popup-body {
-	padding: 30rpx;
+.sheet-handle {
+  width: 92rpx;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background: #dbe6dc;
+  margin: 18rpx auto 0;
 }
 
-/* 发布弹窗 */
-.publish-popup {
-	position: fixed;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	width: 100%;
-	max-height: 90vh;
-	border-radius: 24rpx 24rpx 0 0;
-	animation: slideUp 0.3s ease-out;
+.sheet-head {
+  padding: 22rpx 28rpx 18rpx;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
 }
 
-@keyframes slideUp {
-	from {
-		transform: translateY(100%);
-	}
-	to {
-		transform: translateY(0);
-	}
+.sheet-head.compact {
+  align-items: center;
 }
 
-.popup-header {
-	padding: 20rpx 30rpx;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	border-bottom: 1rpx solid #f0f0f0;
+.sheet-title {
+  display: block;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #243126;
 }
 
-.cancel-btn {
-	font-size: 28rpx;
-	color: #666;
-	padding: 10rpx;
+.sheet-subtitle {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  color: #8b9a8e;
 }
 
-.publish-btn-small {
-	font-size: 28rpx;
-	color: #fff;
-	background: linear-gradient(135deg, #2C8A43, #3CA55C);
-	padding: 10rpx 30rpx;
-	border-radius: 30rpx;
-	border: none;
-	margin: 0;
-	position: relative;
-	overflow: hidden;
+.sheet-close {
+  font-size: 24rpx;
+  color: #39a94b;
+  font-weight: 600;
+  padding-top: 8rpx;
 }
 
-.publish-btn-small[disabled] {
-	background: #ccc;
+.sheet-scroll {
+  height: calc(82vh - 228rpx);
+}
+
+.editor-card,
+.image-editor-card {
+  margin: 0 28rpx 22rpx;
+  padding: 22rpx;
+  border-radius: 26rpx;
+  background: #f8fbf8;
+  border: 2rpx solid #edf2ed;
 }
 
 .post-textarea {
-	width: 100%;
-	min-height: 200rpx;
-	padding: 20rpx;
-	box-sizing: border-box;
-	font-size: 28rpx;
-	line-height: 1.5;
-	background: #fff;
-	border: none;
+  width: 100%;
+  height: 210rpx;
+  font-size: 28rpx;
+  line-height: 1.7;
+  color: #243126;
 }
 
-.upload-section {
-	padding: 20rpx;
-	background: #fff;
+.textarea-placeholder {
+  color: #a2b0a4;
 }
 
-.upload-section .image-grid {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 15rpx;
+.counter-row {
+  margin-top: 12rpx;
+  text-align: right;
+  font-size: 22rpx;
+  color: #98a798;
 }
 
-.upload-section .image-item {
-	position: relative;
-	width: 100%;
-	padding-bottom: 100%;
-	border-radius: 12rpx;
-	overflow: hidden;
+.image-editor-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
 }
 
-.upload-section .image-item image {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
+.image-editor-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #243126;
 }
 
-.delete-btn {
-	position: absolute;
-	top: 6rpx;
-	right: 6rpx;
-	width: 40rpx;
-	height: 40rpx;
-	background: rgba(0,0,0,0.6);
-	color: #fff;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 32rpx;
-	font-weight: bold;
-	z-index: 1;
+.image-editor-tip {
+  font-size: 23rpx;
+  color: #8c9b8f;
 }
 
-.upload-btn {
-	position: relative;
-	width: 100%;
-	padding-bottom: 100%;
-	background: #f8f8f8;
-	border-radius: 12rpx;
-	border: 2rpx dashed #ddd;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
+.selected-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
 }
 
-.camera-icon {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	font-size: 60rpx;
-	color: #999;
-	font-weight: 300;
+.selected-img-wrap,
+.add-img {
+  position: relative;
+  width: 190rpx;
+  height: 190rpx;
+  border-radius: 22rpx;
+  overflow: hidden;
 }
 
-.upload-text {
-	position: absolute;
-	bottom: 20rpx;
-	left: 0;
-	right: 0;
-	text-align: center;
-	font-size: 24rpx;
-	color: #999;
+.selected-img {
+  width: 100%;
+  height: 100%;
 }
 
-/* 评论弹窗 */
-.comments-list {
-	max-height: 60vh;
-	margin-bottom: 20rpx;
+.remove-img {
+  position: absolute;
+  right: 8rpx;
+  top: 8rpx;
+  width: 38rpx;
+  height: 38rpx;
+  border-radius: 50%;
+  background: rgba(36, 49, 38, 0.55);
+  color: #ffffff;
+  font-size: 28rpx;
+  line-height: 36rpx;
+  text-align: center;
 }
 
-.comment-item {
-	padding: 20rpx 0;
-	border-bottom: 2rpx solid #f5f5f5;
+.add-img {
+  border: 2rpx dashed #cfe3d0;
+  background: #f6fbf6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #39a94b;
+  font-size: 24rpx;
+  font-weight: 600;
 }
 
-.comment-header {
-	display: flex;
-	justify-content: space-between;
-	margin-bottom: 10rpx;
+.add-img-icon {
+  width: 46rpx;
+  height: 46rpx;
+  margin-bottom: 10rpx;
 }
 
-.comment-content {
-	font-size: 28rpx;
-	color: #333;
-	line-height: 1.5;
+.sheet-footer {
+  padding: 18rpx 28rpx 32rpx;
+  background: #ffffff;
 }
 
-.comment-input-section {
-	display: flex;
-	gap: 20rpx;
-	padding-top: 20rpx;
-	border-top: 2rpx solid #f5f5f5;
+.submit-btn {
+  width: 100%;
+  height: 92rpx;
+  line-height: 92rpx;
+  border-radius: 999rpx;
+  border: none;
+  background: linear-gradient(90deg, #31b35d 0%, #2ea14d 52%, #42bb65 100%);
+  box-shadow: 0 16rpx 32rpx rgba(57, 169, 75, 0.24);
 }
 
-.comment-input {
-	flex: 1;
-	height: 70rpx;
-	background: #f8f8f8;
-	border-radius: 35rpx;
-	padding: 0 30rpx;
-	font-size: 28rpx;
+.submit-btn::after {
+  border: none;
 }
 
-.comment-btn {
-	width: 120rpx;
-	height: 70rpx;
-	line-height: 70rpx;
-	background: linear-gradient(135deg, #2C8A43, #3CA55C);
-	color: #fff;
-	font-size: 28rpx;
-	border-radius: 35rpx;
-	padding: 0;
-	position: relative;
-	overflow: hidden;
+.submit-btn-text {
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: 700;
+  letter-spacing: 2rpx;
 }
 
-.comment-btn[disabled] {
-	background: #ccc;
+.comment-scroll {
+  height: calc(76vh - 190rpx);
 }
 
-/* 加载更多和空状态 */
-.loading-more, .no-more, .empty-tip {
-	text-align: center;
-	padding: 30rpx;
-	color: #999;
-	font-size: 26rpx;
+.comment-source {
+  margin: 0 28rpx 18rpx;
+  padding: 22rpx;
+  border-radius: 24rpx;
+  background: #f8fbf8;
+  border: 2rpx solid #edf2ed;
 }
 
-/* 评论区样式 */
-.comments-section {
-	padding: 20rpx 0;
+.comment-source-head {
+  display: flex;
+  align-items: center;
 }
 
-.comment-input-wrapper {
-	display: flex;
-	gap: 16rpx;
-	padding: 16rpx 0;
-	align-items: center;
+.comment-source-name {
+  margin-left: 14rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #243126;
 }
 
-.comment-input {
-	flex: 1;
-	height: 70rpx;
-	background: #f8f8f8;
-	border-radius: 35rpx;
-	padding: 0 30rpx;
-	font-size: 28rpx;
+.comment-source-text {
+  display: block;
+  margin-top: 14rpx;
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: #5d6d61;
 }
 
-.send-btn {
-	width: 120rpx;
-	height: 70rpx;
-	line-height: 70rpx;
-	background: linear-gradient(135deg, #2C8A43, #3CA55C);
-	color: #fff;
-	font-size: 28rpx;
-	border-radius: 35rpx;
-	padding: 0;
-	position: relative;
-	overflow: hidden;
+.compact-state {
+  padding-top: 26rpx;
 }
 
-.send-btn[disabled] {
-	background: #ccc;
+.comment-empty {
+  padding-top: 28rpx;
 }
 
-.comments-list {
-	margin-top: 20rpx;
+.comment-list {
+  padding: 0 28rpx 24rpx;
 }
 
 .comment-item {
-	padding: 16rpx 0;
-	border-bottom: 1rpx solid #f5f5f5;
+  display: flex;
+  align-items: flex-start;
+  padding: 22rpx 0;
+  border-bottom: 2rpx solid #eff4ef;
 }
 
-.comment-user {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 8rpx;
+.comment-item:last-child {
+  border-bottom: none;
 }
 
-.comment-username {
-	font-size: 26rpx;
-	color: #2C8A43;
-	font-weight: 500;
+.comment-body {
+  flex: 1;
+  min-width: 0;
+  margin-left: 14rpx;
+}
+
+.comment-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.comment-name {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: #243126;
 }
 
 .comment-time {
-	font-size: 24rpx;
-	color: #999;
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  color: #9aaa9a;
 }
 
-.comment-content {
-	font-size: 28rpx;
-	color: #333;
-	line-height: 1.5;
+.comment-text {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  line-height: 1.7;
+  color: #4d5d50;
 }
-</style> 
+
+.comment-input-bar {
+  padding: 18rpx 24rpx 28rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  background: #ffffff;
+  border-top: 2rpx solid #eff4ef;
+}
+
+.comment-input {
+  flex: 1;
+  height: 78rpx;
+  padding: 0 26rpx;
+  border-radius: 999rpx;
+  background: #f5f9f5;
+  font-size: 27rpx;
+  color: #243126;
+}
+
+.comment-placeholder {
+  color: #a3b0a5;
+}
+
+.send-btn {
+  width: 78rpx;
+  height: 78rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #31b35d 0%, #42bb65 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10rpx 22rpx rgba(57, 169, 75, 0.22);
+}
+
+.send-icon {
+  width: 34rpx;
+  height: 34rpx;
+}
+</style>

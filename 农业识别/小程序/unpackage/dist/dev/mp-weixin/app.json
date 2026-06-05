@@ -20,38 +20,20 @@
       {
         "pagePath": "pages/index/index",
         "text": "识别",
-        "fontSizeRatio": 1,
-        "iconfont": {
-          "text": "",
-          "selectedText": "",
-          "fontSize": "22px",
-          "color": "#999999",
-          "selectedColor": "#2C8A43"
-        }
+        "iconPath": "static/tabbar/tab-recognize.png",
+        "selectedIconPath": "static/tabbar/tab-recognize-active.png"
       },
       {
         "pagePath": "pages/discuss/discuss",
         "text": "讨论",
-        "fontSizeRatio": 1,
-        "iconfont": {
-          "text": "",
-          "selectedText": "",
-          "fontSize": "22px",
-          "color": "#999999",
-          "selectedColor": "#2C8A43"
-        }
+        "iconPath": "static/tabbar/tab-discuss.png",
+        "selectedIconPath": "static/tabbar/tab-discuss-active.png"
       },
       {
         "pagePath": "pages/about/about",
         "text": "关于",
-        "fontSizeRatio": 1,
-        "iconfont": {
-          "text": "",
-          "selectedText": "",
-          "fontSize": "22px",
-          "color": "#999999",
-          "selectedColor": "#2C8A43"
-        }
+        "iconPath": "static/tabbar/tab-about.png",
+        "selectedIconPath": "static/tabbar/tab-about-active.png"
       }
     ]
   },

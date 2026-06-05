@@ -1,9 +1,9 @@
 (global["webpackJsonp"] = global["webpackJsonp"] || []).push([["pages/discuss/discuss"],{
 
-/***/ 66:
-/*!********************************************************************************************************!*\
-  !*** C:/Users/93368/Desktop/软著/基于ResNet50的病虫害识别及防治预警系统/main.js?{"page":"pages%2Fdiscuss%2Fdiscuss"} ***!
-  \********************************************************************************************************/
+/***/ 62:
+/*!************************************************************************************************!*\
+  !*** D:/1_code_study/projects/2026jsjds/农业识别/小程序/main.js?{"page":"pages%2Fdiscuss%2Fdiscuss"} ***!
+  \************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -21,10 +21,10 @@ createPage(_discuss.default);
 
 /***/ }),
 
-/***/ 67:
-/*!*************************************************************************************!*\
-  !*** C:/Users/93368/Desktop/软著/基于ResNet50的病虫害识别及防治预警系统/pages/discuss/discuss.vue ***!
-  \*************************************************************************************/
+/***/ 63:
+/*!*****************************************************************************!*\
+  !*** D:/1_code_study/projects/2026jsjds/农业识别/小程序/pages/discuss/discuss.vue ***!
+  \*****************************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -62,10 +62,10 @@ component.options.__file = "pages/discuss/discuss.vue"
 
 /***/ }),
 
-/***/ 68:
-/*!********************************************************************************************************************!*\
-  !*** C:/Users/93368/Desktop/软著/基于ResNet50的病虫害识别及防治预警系统/pages/discuss/discuss.vue?vue&type=template&id=5e956cc8& ***!
-  \********************************************************************************************************************/
+/***/ 64:
+/*!************************************************************************************************************!*\
+  !*** D:/1_code_study/projects/2026jsjds/农业识别/小程序/pages/discuss/discuss.vue?vue&type=template&id=5e956cc8& ***!
+  \************************************************************************************************************/
 /*! exports provided: render, staticRenderFns, recyclableRender, components */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -84,10 +84,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ 69:
-/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--17-0!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/template.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/page-meta.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!C:/Users/93368/Desktop/软著/基于ResNet50的病虫害识别及防治预警系统/pages/discuss/discuss.vue?vue&type=template&id=5e956cc8& ***!
-  \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ 65:
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--17-0!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/template.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/page-meta.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/1_code_study/projects/2026jsjds/农业识别/小程序/pages/discuss/discuss.vue?vue&type=template&id=5e956cc8& ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns, recyclableRender, components */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -102,48 +102,73 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  var l1 = _vm.__map(_vm.posts, function (post, index) {
-    var $orig = _vm.__get_orig(post)
-    var g0 = post.content.length > 100 && !post.isExpanded
-    var g1 = post.images && post.images.length
-    var l0 = g1
-      ? _vm.__map(post.images, function (image, imgIndex) {
-          var $orig = _vm.__get_orig(image)
-          var m0 = _vm.getImageUrl(image)
+  var g0 = _vm.loading && _vm.posts.length === 0
+  var g1 = !g0 ? _vm.posts.length : null
+  var l1 =
+    !g0 && !(g1 === 0)
+      ? _vm.__map(_vm.posts, function (post, __i0__) {
+          var $orig = _vm.__get_orig(post)
+          var m0 = _vm.getInitial(post.username)
+          var g2 = post.content
+            ? !post.expanded && post.content.length > 80
+            : null
+          var g3 = post.content ? post.content.length : null
+          var g4 = post.images && post.images.length
+          var l0 = g4
+            ? _vm.__map(post.images, function (img, index) {
+                var $orig = _vm.__get_orig(img)
+                var m1 = _vm.fullImageUrl(img)
+                return {
+                  $orig: $orig,
+                  m1: m1,
+                }
+              })
+            : null
           return {
             $orig: $orig,
             m0: m0,
+            g2: g2,
+            g3: g3,
+            g4: g4,
+            l0: l0,
           }
         })
       : null
-    var g2 = post.comments && post.comments.length
-    return {
-      $orig: $orig,
-      g0: g0,
-      g1: g1,
-      l0: l0,
-      g2: g2,
-    }
-  })
-  var g3 = !_vm.hasMore && _vm.posts.length
-  var g4 = !_vm.posts.length && !_vm.isLoading
-  var g5 = _vm.showPublish
-    ? !_vm.newPost.content && !_vm.newPost.images.length
-    : null
-  var g6 = _vm.showPublish ? _vm.newPost.images.length : null
-  var g7 = _vm.showPublish && g6 < 9 ? _vm.newPost.images.length : null
-  var g8 = _vm.showCommentPopup ? _vm.comments.length : null
+  var g5 = _vm.posts.length
+  var g6 = _vm.postSheetVisible ? _vm.postForm.content.length : null
+  var g7 = _vm.postSheetVisible ? _vm.postForm.images.length : null
+  var g8 = _vm.postSheetVisible ? _vm.postForm.images.length : null
+  var m2 =
+    _vm.commentSheetVisible && _vm.activePost
+      ? _vm.getInitial(_vm.activePost.username)
+      : null
+  var g9 =
+    _vm.commentSheetVisible && !_vm.commentsLoading ? _vm.comments.length : null
+  var l2 =
+    _vm.commentSheetVisible && !_vm.commentsLoading && !(g9 === 0)
+      ? _vm.__map(_vm.comments, function (comment, __i1__) {
+          var $orig = _vm.__get_orig(comment)
+          var m3 = _vm.getInitial(comment.username)
+          return {
+            $orig: $orig,
+            m3: m3,
+          }
+        })
+      : null
   _vm.$mp.data = Object.assign(
     {},
     {
       $root: {
+        g0: g0,
+        g1: g1,
         l1: l1,
-        g3: g3,
-        g4: g4,
         g5: g5,
         g6: g6,
         g7: g7,
         g8: g8,
+        m2: m2,
+        g9: g9,
+        l2: l2,
       },
     }
   )
@@ -156,10 +181,10 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ 70:
-/*!**************************************************************************************************************!*\
-  !*** C:/Users/93368/Desktop/软著/基于ResNet50的病虫害识别及防治预警系统/pages/discuss/discuss.vue?vue&type=script&lang=js& ***!
-  \**************************************************************************************************************/
+/***/ 66:
+/*!******************************************************************************************************!*\
+  !*** D:/1_code_study/projects/2026jsjds/农业识别/小程序/pages/discuss/discuss.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -172,10 +197,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ 71:
-/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--13-1!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/script.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!C:/Users/93368/Desktop/软著/基于ResNet50的病虫害识别及防治预警系统/pages/discuss/discuss.vue?vue&type=script&lang=js& ***!
-  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ 67:
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--13-1!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/script.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/1_code_study/projects/2026jsjds/农业识别/小程序/pages/discuss/discuss.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -187,554 +212,564 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 57));
+var _regenerator = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/regenerator */ 40));
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
-var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 59));
-var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
-var _config = _interopRequireDefault(__webpack_require__(/*! @/config.js */ 40));
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+var _asyncToGenerator2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/asyncToGenerator */ 42));
+var _config = _interopRequireDefault(__webpack_require__(/*! @/config.js */ 43));
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var _default = {
   data: function data() {
     return {
+      userInfo: null,
       posts: [],
-      comments: [],
-      currentPage: 1,
+      page: 1,
       pageSize: 10,
       hasMore: true,
-      isLoading: false,
-      isRefreshing: false,
-      showPublish: false,
-      showCommentPopup: false,
-      currentPost: null,
-      newPost: {
+      loading: false,
+      loadingMore: false,
+      postSheetVisible: false,
+      publishing: false,
+      postForm: {
         content: '',
         images: []
       },
-      newComment: '',
-      userInfo: null
+      commentSheetVisible: false,
+      activePost: null,
+      comments: [],
+      commentsLoading: false,
+      commentText: ''
     };
   },
-  onLoad: function onLoad() {
-    this.userInfo = uni.getStorageSync('userInfo');
-    if (!this.userInfo) {
-      uni.redirectTo({
-        url: '/pages/login/login'
-      });
-      return;
-    }
-    this.getPosts();
+  onShow: function onShow() {
+    this.loadUserInfo();
+    this.refreshPosts();
+  },
+  onPullDownRefresh: function onPullDownRefresh() {
+    this.refreshPosts().finally(function () {
+      uni.stopPullDownRefresh();
+    });
+  },
+  onReachBottom: function onReachBottom() {
+    this.loadMore();
   },
   methods: {
-    // 显示发布弹窗
-    showPublishPopup: function showPublishPopup() {
-      this.showPublish = true;
+    loadUserInfo: function loadUserInfo() {
+      var userInfo = uni.getStorageSync('userInfo');
+      this.userInfo = userInfo && userInfo.userId ? userInfo : null;
     },
-    // 关闭发布弹窗
-    closePublishPopup: function closePublishPopup() {
-      this.showPublish = false;
-      this.newPost = {
-        content: '',
-        images: []
-      };
-    },
-    // 选择图片
-    chooseImage: function chooseImage() {
+    refreshPosts: function refreshPosts() {
       var _this = this;
-      var maxCount = 9 - this.newPost.images.length;
-      if (maxCount <= 0) {
-        uni.showToast({
-          title: '最多上传9张图片',
-          icon: 'none'
-        });
-        return;
-      }
-      uni.chooseImage({
-        count: maxCount,
-        success: function success(res) {
-          _this.newPost.images = [].concat((0, _toConsumableArray2.default)(_this.newPost.images), (0, _toConsumableArray2.default)(res.tempFilePaths));
-        }
-      });
-    },
-    // 删除图片
-    deleteImage: function deleteImage(index) {
-      this.newPost.images.splice(index, 1);
-    },
-    // 提交帖子
-    submitPost: function submitPost() {
-      var _this2 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee() {
-        var uploadedImages, _iterator, _step, image, uploadRes, result, formData, res;
+        var posts;
         return _regenerator.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (!(!_this2.newPost.content && !_this2.newPost.images.length)) {
-                  _context.next = 2;
-                  break;
-                }
-                return _context.abrupt("return");
-              case 2:
-                _context.prev = 2;
-                // 先上传图片
-                uploadedImages = [];
-                _iterator = _createForOfIteratorHelper(_this2.newPost.images);
-                _context.prev = 5;
-                _iterator.s();
-              case 7:
-                if ((_step = _iterator.n()).done) {
-                  _context.next = 22;
-                  break;
-                }
-                image = _step.value;
-                _context.prev = 9;
-                _context.next = 12;
-                return uni.uploadFile({
-                  url: _config.default.baseUrl + '/api/upload',
-                  filePath: image,
-                  name: 'file',
-                  header: {
-                    'content-type': 'multipart/form-data'
-                  },
-                  formData: {
-                    user_id: _this2.userInfo.userId
-                  }
-                });
-              case 12:
-                uploadRes = _context.sent;
-                result = JSON.parse(uploadRes.data);
-                if (result.success) {
-                  uploadedImages.push(result.path);
-                }
-                _context.next = 20;
+                _this.page = 1;
+                _this.hasMore = true;
+                _this.loading = true;
+                _context.prev = 3;
+                _context.next = 6;
+                return _this.fetchPosts(1);
+              case 6:
+                posts = _context.sent;
+                _this.posts = posts;
+                _this.hasMore = posts.length >= _this.pageSize;
+                _context.next = 15;
                 break;
-              case 17:
-                _context.prev = 17;
-                _context.t0 = _context["catch"](9);
-                console.error('图片上传失败:', _context.t0);
-              case 20:
-                _context.next = 7;
-                break;
-              case 22:
-                _context.next = 27;
-                break;
-              case 24:
-                _context.prev = 24;
-                _context.t1 = _context["catch"](5);
-                _iterator.e(_context.t1);
-              case 27:
-                _context.prev = 27;
-                _iterator.f();
-                return _context.finish(27);
-              case 30:
-                // 发布帖子
-                formData = {
-                  user_id: _this2.userInfo.userId,
-                  content: _this2.newPost.content || '',
-                  images: uploadedImages.length ? uploadedImages.join(',') : ''
-                };
-                console.log('发布帖子数据:', formData);
-                _context.next = 34;
-                return uni.request({
-                  url: _config.default.baseUrl + '/api/posts',
-                  method: 'POST',
-                  header: {
-                    'content-type': 'application/x-www-form-urlencoded'
-                  },
-                  data: formData
-                });
-              case 34:
-                res = _context.sent;
-                if (!res.data.success) {
-                  _context.next = 41;
-                  break;
-                }
-                uni.showToast({
-                  title: '发布成功',
-                  icon: 'success'
-                });
-                _this2.closePublishPopup();
-                _this2.refreshPosts();
-                _context.next = 42;
-                break;
-              case 41:
-                throw new Error(res.data.message || '发布失败');
-              case 42:
-                _context.next = 48;
-                break;
-              case 44:
-                _context.prev = 44;
-                _context.t2 = _context["catch"](2);
-                uni.showToast({
-                  title: _context.t2.message || '发布失败',
-                  icon: 'none'
-                });
-                console.error('发布失败:', _context.t2);
-              case 48:
+              case 11:
+                _context.prev = 11;
+                _context.t0 = _context["catch"](3);
+                console.error('refresh posts error:', _context.t0);
+                _this.toast('社区内容加载失败');
+              case 15:
+                _context.prev = 15;
+                _this.loading = false;
+                return _context.finish(15);
+              case 18:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[2, 44], [5, 24, 27, 30], [9, 17]]);
+        }, _callee, null, [[3, 11, 15, 18]]);
       }))();
     },
-    // 获取帖子列表
-    getPosts: function getPosts() {
-      var _this3 = this;
+    loadMore: function loadMore() {
+      var _this2 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee2() {
-        var res, posts, _iterator2, _step2, post;
+        var nextPage, posts;
         return _regenerator.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _context2.prev = 0;
-                _context2.next = 3;
-                return uni.request({
-                  url: "".concat(_config.default.baseUrl, "/api/posts"),
-                  method: 'GET',
-                  data: {
-                    page: _this3.currentPage,
-                    page_size: _this3.pageSize,
-                    user_id: _this3.userInfo.userId
-                  }
-                });
-              case 3:
-                res = _context2.sent;
-                if (!res.data.success) {
-                  _context2.next = 25;
+                if (!(_this2.loading || _this2.loadingMore || !_this2.hasMore)) {
+                  _context2.next = 2;
                   break;
                 }
-                posts = res.data.posts.map(function (post) {
-                  return _objectSpread(_objectSpread({}, post), {}, {
-                    newComment: '',
-                    comments: [],
-                    isExpanded: false
-                  });
-                }); // 如果是刷新或第一页，直接替换数据
-                if (_this3.currentPage === 1) {
-                  _this3.posts = posts;
-                } else {
-                  // 否则追加数据
-                  _this3.posts = [].concat((0, _toConsumableArray2.default)(_this3.posts), (0, _toConsumableArray2.default)(posts));
-                }
-
-                // 判断是否还有更多数据
-                _this3.hasMore = posts.length === _this3.pageSize;
-
-                // 获取每个帖子的评论
-                _iterator2 = _createForOfIteratorHelper(posts);
-                _context2.prev = 9;
-                _iterator2.s();
-              case 11:
-                if ((_step2 = _iterator2.n()).done) {
-                  _context2.next = 17;
-                  break;
-                }
-                post = _step2.value;
-                _context2.next = 15;
-                return _this3.getComments(post);
-              case 15:
-                _context2.next = 11;
+                return _context2.abrupt("return");
+              case 2:
+                _this2.loadingMore = true;
+                _context2.prev = 3;
+                nextPage = _this2.page + 1;
+                _context2.next = 7;
+                return _this2.fetchPosts(nextPage);
+              case 7:
+                posts = _context2.sent;
+                _this2.posts = _this2.posts.concat(posts);
+                _this2.page = nextPage;
+                _this2.hasMore = posts.length >= _this2.pageSize;
+                _context2.next = 17;
                 break;
+              case 13:
+                _context2.prev = 13;
+                _context2.t0 = _context2["catch"](3);
+                console.error('load more posts error:', _context2.t0);
+                _this2.toast('加载更多失败');
               case 17:
-                _context2.next = 22;
-                break;
-              case 19:
-                _context2.prev = 19;
-                _context2.t0 = _context2["catch"](9);
-                _iterator2.e(_context2.t0);
-              case 22:
-                _context2.prev = 22;
-                _iterator2.f();
-                return _context2.finish(22);
-              case 25:
-                _context2.next = 32;
-                break;
-              case 27:
-                _context2.prev = 27;
-                _context2.t1 = _context2["catch"](0);
-                console.error('获取帖子列表失败:', _context2.t1);
-                uni.showToast({
-                  title: '获取帖子失败',
-                  icon: 'none'
-                });
-
-                // 加载失败时恢复页码
-                if (_this3.currentPage > 1) {
-                  _this3.currentPage--;
-                }
-              case 32:
-                _context2.prev = 32;
-                _this3.isLoading = false;
-                _this3.isRefreshing = false;
-                return _context2.finish(32);
-              case 36:
+                _context2.prev = 17;
+                _this2.loadingMore = false;
+                return _context2.finish(17);
+              case 20:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, null, [[0, 27, 32, 36], [9, 19, 22, 25]]);
+        }, _callee2, null, [[3, 13, 17, 20]]);
       }))();
     },
-    // 刷新帖子列表
-    refreshPosts: function refreshPosts() {
-      this.currentPage = 1;
-      this.hasMore = true;
-      this.getPosts();
+    fetchPosts: function fetchPosts(page) {
+      var _this3 = this;
+      return new Promise(function (resolve, reject) {
+        uni.request({
+          url: _config.default.baseUrl + '/api/posts',
+          method: 'GET',
+          data: {
+            page: page,
+            page_size: _this3.pageSize,
+            user_id: _this3.userInfo ? _this3.userInfo.userId : undefined
+          },
+          success: function success(_ref) {
+            var data = _ref.data;
+            if (data && data.success) {
+              var posts = (data.posts || []).map(function (item) {
+                return _objectSpread(_objectSpread({}, item), {}, {
+                  expanded: false
+                });
+              });
+              resolve(posts);
+              return;
+            }
+            reject(new Error(data && data.message || '获取失败'));
+          },
+          fail: reject
+        });
+      });
     },
-    // 加载更多
-    loadMore: function loadMore() {
+    openPostSheet: function openPostSheet() {
+      if (!this.ensureLogin()) return;
+      this.postSheetVisible = true;
+    },
+    closePostSheet: function closePostSheet() {
+      if (this.publishing) return;
+      this.postSheetVisible = false;
+    },
+    choosePostImages: function choosePostImages() {
       var _this4 = this;
+      var remain = 9 - this.postForm.images.length;
+      if (remain <= 0) return;
+      uni.chooseImage({
+        count: remain,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera'],
+        success: function success(_ref2) {
+          var tempFilePaths = _ref2.tempFilePaths;
+          _this4.postForm.images = _this4.postForm.images.concat(tempFilePaths || []).slice(0, 9);
+        }
+      });
+    },
+    removeLocalImage: function removeLocalImage(index) {
+      this.postForm.images.splice(index, 1);
+    },
+    previewLocalImages: function previewLocalImages(index) {
+      uni.previewImage({
+        current: this.postForm.images[index],
+        urls: this.postForm.images
+      });
+    },
+    submitPost: function submitPost() {
+      var _this5 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee3() {
+        var imagePaths, _iterator, _step, filePath, uploadedPath;
         return _regenerator.default.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                if (!(_this4.isLoading || _this4.isRefreshing || !_this4.hasMore)) {
+                if (_this5.ensureLogin()) {
                   _context3.next = 2;
                   break;
                 }
                 return _context3.abrupt("return");
               case 2:
-                _this4.isLoading = true;
-                _this4.currentPage++;
-                _context3.next = 6;
-                return _this4.getPosts();
-              case 6:
+                if (!(!_this5.postForm.content && _this5.postForm.images.length === 0)) {
+                  _context3.next = 5;
+                  break;
+                }
+                _this5.toast('请输入内容或选择图片');
+                return _context3.abrupt("return");
+              case 5:
+                if (!_this5.publishing) {
+                  _context3.next = 7;
+                  break;
+                }
+                return _context3.abrupt("return");
+              case 7:
+                _this5.publishing = true;
+                _context3.prev = 8;
+                imagePaths = [];
+                _iterator = _createForOfIteratorHelper(_this5.postForm.images);
+                _context3.prev = 11;
+                _iterator.s();
+              case 13:
+                if ((_step = _iterator.n()).done) {
+                  _context3.next = 21;
+                  break;
+                }
+                filePath = _step.value;
+                _context3.next = 17;
+                return _this5.uploadPostImage(filePath);
+              case 17:
+                uploadedPath = _context3.sent;
+                if (uploadedPath) imagePaths.push(uploadedPath);
+              case 19:
+                _context3.next = 13;
+                break;
+              case 21:
+                _context3.next = 26;
+                break;
+              case 23:
+                _context3.prev = 23;
+                _context3.t0 = _context3["catch"](11);
+                _iterator.e(_context3.t0);
+              case 26:
+                _context3.prev = 26;
+                _iterator.f();
+                return _context3.finish(26);
+              case 29:
+                _context3.next = 31;
+                return _this5.createPost(imagePaths);
+              case 31:
+                uni.showToast({
+                  title: '发布成功',
+                  icon: 'success'
+                });
+                _this5.postForm = {
+                  content: '',
+                  images: []
+                };
+                _this5.postSheetVisible = false;
+                _this5.refreshPosts();
+                _context3.next = 41;
+                break;
+              case 37:
+                _context3.prev = 37;
+                _context3.t1 = _context3["catch"](8);
+                console.error('submit post error:', _context3.t1);
+                _this5.toast(_context3.t1.message || '发布失败');
+              case 41:
+                _context3.prev = 41;
+                _this5.publishing = false;
+                return _context3.finish(41);
+              case 44:
               case "end":
                 return _context3.stop();
             }
           }
-        }, _callee3);
+        }, _callee3, null, [[8, 37, 41, 44], [11, 23, 26, 29]]);
       }))();
     },
-    // 下拉刷新
-    onRefresh: function onRefresh() {
-      var _this5 = this;
+    uploadPostImage: function uploadPostImage(filePath) {
+      return new Promise(function (resolve, reject) {
+        uni.uploadFile({
+          url: _config.default.baseUrl + '/api/upload',
+          filePath: filePath,
+          name: 'file',
+          success: function success(_ref3) {
+            var data = _ref3.data;
+            try {
+              var payload = typeof data === 'string' ? JSON.parse(data) : data;
+              if (payload && payload.success) {
+                resolve(payload.path);
+                return;
+              }
+              reject(new Error(payload && payload.message || '图片上传失败'));
+            } catch (error) {
+              reject(error);
+            }
+          },
+          fail: reject
+        });
+      });
+    },
+    createPost: function createPost(imagePaths) {
+      var _this6 = this;
+      return new Promise(function (resolve, reject) {
+        uni.request({
+          url: _config.default.baseUrl + '/api/posts',
+          method: 'POST',
+          data: {
+            user_id: _this6.userInfo.userId,
+            content: _this6.postForm.content,
+            images: imagePaths.join(',')
+          },
+          header: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          success: function success(_ref4) {
+            var data = _ref4.data;
+            if (data && data.success) {
+              resolve(data);
+              return;
+            }
+            reject(new Error(data && data.message || '发布失败'));
+          },
+          fail: reject
+        });
+      });
+    },
+    toggleLike: function toggleLike(post) {
+      var _this7 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee4() {
+        var oldLiked;
         return _regenerator.default.wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
               case 0:
-                _this5.isRefreshing = true;
-                _this5.currentPage = 1;
-                _this5.hasMore = true;
-                _context4.next = 5;
-                return _this5.getPosts();
-              case 5:
+                if (_this7.ensureLogin()) {
+                  _context4.next = 2;
+                  break;
+                }
+                return _context4.abrupt("return");
+              case 2:
+                oldLiked = !!post.is_liked;
+                post.is_liked = !oldLiked;
+                post.like_count = Math.max(0, Number(post.like_count || 0) + (oldLiked ? -1 : 1));
+                _context4.prev = 5;
+                _context4.next = 8;
+                return new Promise(function (resolve, reject) {
+                  uni.request({
+                    url: "".concat(_config.default.baseUrl, "/api/posts/").concat(post.post_id, "/like"),
+                    method: 'POST',
+                    data: {
+                      user_id: _this7.userInfo.userId
+                    },
+                    header: {
+                      'Content-Type': 'application/json'
+                    },
+                    success: function success(_ref5) {
+                      var data = _ref5.data;
+                      if (data && data.success) {
+                        resolve(data);
+                        return;
+                      }
+                      reject(new Error(data && data.message || '操作失败'));
+                    },
+                    fail: reject
+                  });
+                });
+              case 8:
+                _context4.next = 16;
+                break;
+              case 10:
+                _context4.prev = 10;
+                _context4.t0 = _context4["catch"](5);
+                post.is_liked = oldLiked;
+                post.like_count = Math.max(0, Number(post.like_count || 0) + (oldLiked ? 1 : -1));
+                console.error('like error:', _context4.t0);
+                _this7.toast('操作失败');
+              case 16:
               case "end":
                 return _context4.stop();
             }
           }
-        }, _callee4);
+        }, _callee4, null, [[5, 10]]);
       }))();
     },
-    // 切换内容展开状态
-    toggleContent: function toggleContent(post) {
-      this.$set(post, 'isExpanded', !post.isExpanded);
-    },
-    // 修改点赞方法，添加动画效果
-    toggleLike: function toggleLike(post) {
-      var _this6 = this;
+    openComments: function openComments(post) {
+      var _this8 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee5() {
-        var res;
         return _regenerator.default.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
-                if (!post.isLiking) {
-                  _context5.next = 2;
-                  break;
-                }
-                return _context5.abrupt("return");
-              case 2:
-                _context5.prev = 2;
-                post.isLiking = true;
-                _context5.next = 6;
-                return uni.request({
-                  url: "".concat(_config.default.baseUrl, "/api/posts/").concat(post.post_id, "/like"),
-                  method: 'POST',
-                  header: {
-                    'content-type': 'application/json'
-                  },
-                  data: {
-                    user_id: _this6.userInfo.userId
-                  }
-                });
-              case 6:
-                res = _context5.sent;
-                if (res.data.success) {
-                  post.is_liked = !post.is_liked;
-                  post.like_count += post.is_liked ? 1 : -1;
-
-                  // 只在点赞时显示动画
-                  if (post.is_liked) {
-                    setTimeout(function () {
-                      post.isLiking = false;
-                    }, 800); // 动画持续时间
-                  } else {
-                    post.isLiking = false;
-                  }
-                }
-                _context5.next = 15;
-                break;
-              case 10:
-                _context5.prev = 10;
-                _context5.t0 = _context5["catch"](2);
-                console.error('点赞失败:', _context5.t0);
-                uni.showToast({
-                  title: '操作失败',
-                  icon: 'none'
-                });
-                post.isLiking = false;
-              case 15:
+                _this8.activePost = post;
+                _this8.commentSheetVisible = true;
+                _this8.commentText = '';
+                _context5.next = 5;
+                return _this8.fetchComments(post);
+              case 5:
               case "end":
                 return _context5.stop();
             }
           }
-        }, _callee5, null, [[2, 10]]);
+        }, _callee5);
       }))();
     },
-    // 显示评论
-    showComments: function showComments(post) {
-      var _this7 = this;
+    closeComments: function closeComments() {
+      this.commentSheetVisible = false;
+      this.activePost = null;
+      this.comments = [];
+      this.commentText = '';
+    },
+    fetchComments: function fetchComments(post) {
+      var _this9 = this;
+      this.commentsLoading = true;
+      return new Promise(function (resolve) {
+        uni.request({
+          url: "".concat(_config.default.baseUrl, "/api/posts/").concat(post.post_id, "/comments"),
+          method: 'GET',
+          success: function success(_ref6) {
+            var data = _ref6.data;
+            if (data && data.success) {
+              _this9.comments = data.comments || [];
+            } else {
+              _this9.comments = [];
+              _this9.toast(data && data.message || '评论加载失败');
+            }
+            resolve();
+          },
+          fail: function fail() {
+            _this9.comments = [];
+            _this9.toast('评论加载失败');
+            resolve();
+          },
+          complete: function complete() {
+            _this9.commentsLoading = false;
+          }
+        });
+      });
+    },
+    submitComment: function submitComment() {
+      var _this10 = this;
       return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee6() {
+        var content;
         return _regenerator.default.wrap(function _callee6$(_context6) {
           while (1) {
             switch (_context6.prev = _context6.next) {
               case 0:
-                _this7.currentPost = post;
-                _this7.showCommentPopup = true;
-                _this7.getComments(post.post_id);
-              case 3:
+                if (_this10.ensureLogin()) {
+                  _context6.next = 2;
+                  break;
+                }
+                return _context6.abrupt("return");
+              case 2:
+                if (_this10.activePost) {
+                  _context6.next = 4;
+                  break;
+                }
+                return _context6.abrupt("return");
+              case 4:
+                if (_this10.commentText) {
+                  _context6.next = 7;
+                  break;
+                }
+                _this10.toast('请输入评论内容');
+                return _context6.abrupt("return");
+              case 7:
+                content = _this10.commentText;
+                _this10.commentText = '';
+                _context6.prev = 9;
+                _context6.next = 12;
+                return new Promise(function (resolve, reject) {
+                  uni.request({
+                    url: "".concat(_config.default.baseUrl, "/api/posts/").concat(_this10.activePost.post_id, "/comments"),
+                    method: 'POST',
+                    data: {
+                      user_id: _this10.userInfo.userId,
+                      content: content
+                    },
+                    header: {
+                      'Content-Type': 'application/json'
+                    },
+                    success: function success(_ref7) {
+                      var data = _ref7.data;
+                      if (data && data.success) {
+                        resolve(data);
+                        return;
+                      }
+                      reject(new Error(data && data.message || '评论失败'));
+                    },
+                    fail: reject
+                  });
+                });
+              case 12:
+                _this10.activePost.comment_count = Number(_this10.activePost.comment_count || 0) + 1;
+                _context6.next = 15;
+                return _this10.fetchComments(_this10.activePost);
+              case 15:
+                _context6.next = 22;
+                break;
+              case 17:
+                _context6.prev = 17;
+                _context6.t0 = _context6["catch"](9);
+                _this10.commentText = content;
+                console.error('comment error:', _context6.t0);
+                _this10.toast('评论失败');
+              case 22:
               case "end":
                 return _context6.stop();
             }
           }
-        }, _callee6);
+        }, _callee6, null, [[9, 17]]);
       }))();
     },
-    // 关闭评论弹窗
-    closeCommentPopup: function closeCommentPopup() {
-      this.showCommentPopup = false;
-      this.currentPost = null;
-      this.newComment = '';
-      this.comments = [];
+    toggleExpand: function toggleExpand(post) {
+      post.expanded = !post.expanded;
     },
-    // 获取评论列表
-    getComments: function getComments(post) {
-      var _this8 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee7() {
-        var res;
-        return _regenerator.default.wrap(function _callee7$(_context7) {
-          while (1) {
-            switch (_context7.prev = _context7.next) {
-              case 0:
-                _context7.prev = 0;
-                _context7.next = 3;
-                return uni.request({
-                  url: "".concat(_config.default.baseUrl, "/api/posts/").concat(post.post_id, "/comments"),
-                  method: 'GET'
-                });
-              case 3:
-                res = _context7.sent;
-                if (res.data.success) {
-                  _this8.$set(post, 'comments', res.data.comments);
-                }
-                _context7.next = 10;
-                break;
-              case 7:
-                _context7.prev = 7;
-                _context7.t0 = _context7["catch"](0);
-                console.error('获取评论失败:', _context7.t0);
-              case 10:
-              case "end":
-                return _context7.stop();
-            }
-          }
-        }, _callee7, null, [[0, 7]]);
-      }))();
-    },
-    // 修改提交评论方法
-    submitComment: function submitComment(post) {
-      var _this9 = this;
-      return (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee8() {
-        var res;
-        return _regenerator.default.wrap(function _callee8$(_context8) {
-          while (1) {
-            switch (_context8.prev = _context8.next) {
-              case 0:
-                if (post.newComment) {
-                  _context8.next = 2;
-                  break;
-                }
-                return _context8.abrupt("return");
-              case 2:
-                _context8.prev = 2;
-                _context8.next = 5;
-                return uni.request({
-                  url: "".concat(_config.default.baseUrl, "/api/posts/").concat(post.post_id, "/comments"),
-                  method: 'POST',
-                  header: {
-                    'content-type': 'application/json'
-                  },
-                  data: {
-                    user_id: _this9.userInfo.userId,
-                    content: post.newComment
-                  }
-                });
-              case 5:
-                res = _context8.sent;
-                if (!res.data.success) {
-                  _context8.next = 12;
-                  break;
-                }
-                // 清空输入框
-                post.newComment = '';
-                // 重新获取评论
-                _context8.next = 10;
-                return _this9.getComments(post);
-              case 10:
-                // 更新评论数
-                post.comment_count++;
-                uni.showToast({
-                  title: '评论成功',
-                  icon: 'success'
-                });
-              case 12:
-                _context8.next = 18;
-                break;
-              case 14:
-                _context8.prev = 14;
-                _context8.t0 = _context8["catch"](2);
-                console.error('评论失败:', _context8.t0);
-                uni.showToast({
-                  title: '评论失败',
-                  icon: 'none'
-                });
-              case 18:
-              case "end":
-                return _context8.stop();
-            }
-          }
-        }, _callee8, null, [[2, 14]]);
-      }))();
-    },
-    // 获取图片URL
-    getImageUrl: function getImageUrl(path) {
-      return _config.default.baseUrl + '/' + path;
-    },
-    // 预览图片
-    previewImage: function previewImage(images, current) {
-      var _this10 = this;
+    previewPostImages: function previewPostImages(images, index) {
+      var _this11 = this;
+      var urls = images.map(function (img) {
+        return _this11.fullImageUrl(img);
+      });
       uni.previewImage({
-        urls: images.map(function (img) {
-          return _this10.getImageUrl(img);
-        }),
-        current: current
+        current: urls[index],
+        urls: urls
+      });
+    },
+    fullImageUrl: function fullImageUrl(path) {
+      if (!path) return '/static/ui/empty/empty-posts.png';
+      if (/^https?:\/\//.test(path)) return path;
+      if (path.startsWith('/')) return _config.default.baseUrl + path;
+      return "".concat(_config.default.baseUrl, "/").concat(path);
+    },
+    getInitial: function getInitial(name) {
+      if (!name) return '农';
+      return String(name).slice(0, 1);
+    },
+    ensureLogin: function ensureLogin() {
+      if (this.userInfo && this.userInfo.userId) return true;
+      uni.showModal({
+        title: '请先登录',
+        content: '登录后可发布帖子、点赞和评论。',
+        confirmText: '去登录',
+        success: function success(_ref8) {
+          var confirm = _ref8.confirm;
+          if (confirm) {
+            uni.navigateTo({
+              url: '/pages/login/login'
+            });
+          }
+        }
+      });
+      return false;
+    },
+    toast: function toast(title) {
+      uni.showToast({
+        title: title,
+        icon: 'none'
       });
     }
   }
@@ -744,10 +779,10 @@ exports.default = _default;
 
 /***/ }),
 
-/***/ 72:
-/*!**********************************************************************************************************************!*\
-  !*** C:/Users/93368/Desktop/软著/基于ResNet50的病虫害识别及防治预警系统/pages/discuss/discuss.vue?vue&type=style&index=0&lang=css& ***!
-  \**********************************************************************************************************************/
+/***/ 68:
+/*!**************************************************************************************************************!*\
+  !*** D:/1_code_study/projects/2026jsjds/农业识别/小程序/pages/discuss/discuss.vue?vue&type=style&index=0&lang=css& ***!
+  \**************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -760,10 +795,10 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ 73:
-/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/mini-css-extract-plugin/dist/loader.js??ref--6-oneOf-1-0!./node_modules/css-loader/dist/cjs.js??ref--6-oneOf-1-1!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--6-oneOf-1-2!./node_modules/postcss-loader/src??ref--6-oneOf-1-3!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!C:/Users/93368/Desktop/软著/基于ResNet50的病虫害识别及防治预警系统/pages/discuss/discuss.vue?vue&type=style&index=0&lang=css& ***!
-  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ 69:
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/mini-css-extract-plugin/dist/loader.js??ref--6-oneOf-1-0!./node_modules/css-loader/dist/cjs.js??ref--6-oneOf-1-1!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--6-oneOf-1-2!./node_modules/postcss-loader/src??ref--6-oneOf-1-3!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/1_code_study/projects/2026jsjds/农业识别/小程序/pages/discuss/discuss.vue?vue&type=style&index=0&lang=css& ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 

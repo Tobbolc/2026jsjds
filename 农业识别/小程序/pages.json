@@ -1,5 +1,5 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+	"pages": [
 		{
 			"path": "pages/index/index",
 			"style": {
@@ -38,36 +38,18 @@
 		"list": [{
 			"pagePath": "pages/index/index",
 			"text": "识别",
-			"fontSizeRatio": 1.0,
-			"iconfont": {
-				"text": "\ue665",  // 使用内置图标的 unicode
-				"selectedText": "\ue665",
-				"fontSize": "22px",
-				"color": "#999999",
-				"selectedColor": "#2C8A43"
-			}
+			"iconPath": "static/tabbar/tab-recognize.png",
+			"selectedIconPath": "static/tabbar/tab-recognize-active.png"
 		}, {
 			"pagePath": "pages/discuss/discuss",
 			"text": "讨论",
-			"fontSizeRatio": 1.0,
-			"iconfont": {
-				"text": "\ue63d",  // 讨论图标
-				"selectedText": "\ue63d",
-				"fontSize": "22px",
-				"color": "#999999",
-				"selectedColor": "#2C8A43"
-			}
+			"iconPath": "static/tabbar/tab-discuss.png",
+			"selectedIconPath": "static/tabbar/tab-discuss-active.png"
 		}, {
 			"pagePath": "pages/about/about",
 			"text": "关于",
-			"fontSizeRatio": 1.0,
-			"iconfont": {
-				"text": "\ue60f",  // 使用内置图标的 unicode
-				"selectedText": "\ue60f",
-				"fontSize": "22px",
-				"color": "#999999",
-				"selectedColor": "#2C8A43"
-			}
+			"iconPath": "static/tabbar/tab-about.png",
+			"selectedIconPath": "static/tabbar/tab-about-active.png"
 		}]
 	},
 	"globalStyle": {
